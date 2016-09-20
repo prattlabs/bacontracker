@@ -1,25 +1,17 @@
 {
-  "name": "bacon-tracker",
-  "version": "1.0.0",
-  "description": "A simple ticket and issue tracking system.",
-  "main": "server.js",
-  "dependencies": {
-    "mongodb": "^2.2.10",
-    "mongojs": "^2.4.0"
-  },
-  "devDependencies": {},
+  "name": "workspace",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node ./bin/www"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/zppratt/bacontracker.git"
-  },
-  "author": "Team Bacon Fiesta",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/zppratt/bacontracker/issues"
-  },
-  "homepage": "https://github.com/zppratt/bacontracker#readme"
+  "dependencies": {
+    "body-parser": "~1.15.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.2.0",
+    "express": "~4.13.4",
+    "jade": "~1.11.0",
+    "morgan": "~1.7.0",
+    "serve-favicon": "~2.3.0"
+  }
 }
