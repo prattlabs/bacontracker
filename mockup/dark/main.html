@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/ui-darkness/jquery-ui.css">
+    <link rel="stylesheet" href="css/main.css">
+    <script src="http://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.jeditable/1.7.3/jquery.jeditable.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".accordion").accordion({
+                //
+                // Accordion lets the tickets unfold and show their contents.
+                //
+                collapsible: true,
+                header: "> div > h3"
+            }).sortable({
+                //
+                // Sortable lets you sort the tickets.
+                //
+                axis: "y",
+                handle: "h3",
+                stop: function (event, ui) {
+                    // IE doesn't register the blur when sorting
+                    // so trigger focusout handlers to remove .ui-state-focus
+                    ui.item.children("h3").triggerHandler("focusout");
+
+                    // Refresh accordion to handle new order
+                    $(this).accordion("refresh");
+                }
+            });
+            //
+            //  Editable lets you edit text inline, and sends a post to the url in the first parameter.
+            //
+            $(".edit").editable("#", {
+                style: 'display: inline',
+                // indicator: '<img src="img/indicator.gif">',
+                // tooltip   : 'Click to edit...'
+            });
+        });
+    </script>
+</head>
+<body>
+<h2>Project Name</h2>
+<div class="accordion">
+    <div class="group">
+        <h3>Create mockups for UI #234</h3>
+        <div>
+            Title:
+            <div class="edit" style="display: inline">Create mockups for UI</div>
+            <br>
+            Story Points:
+            <div class="edit" style="display: inline">5</div>
+            <br>
+            Description:
+            <div class="edit" style="display: inline">blah blah blah</div>
+            <br>
+            Assigned to:
+            <div class="edit" style="display: inline">Zach P</div>
+            <br>
+        </div>
+    </div>
+    <div class="group">
+        <h3>Delete unused code #876</h3>
+        <div>
+            Title:
+            <div class="edit" style="display: inline">Delete unused code</div>
+            <br>
+            Story Points:
+            <div class="edit" style="display: inline">2</div>
+            <br>
+            Description:
+            <div class="edit" style="display: inline">blah blah blah</div>
+            <br>
+            Assigned to:
+            <div class="edit" style="display: inline">Cameron L</div>
+            <br>
+        </div>
+    </div>
+    <div class="group">
+        <h3>Third</h3>
+        <div>Second content panel</div>
+    </div>
+    <div class="group">
+        <h3>Fourth</h3>
+
+        <div>Second content panel</div>
+    </div>
+</div>
+</body>
+</html>
