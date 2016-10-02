@@ -5,23 +5,14 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var LocalStrategy = require('passport-local').Strategy;
-var User = require('./user.js');
+var User = require('../models/user.js');
+var router = express.Router();
 
-// Setup the app
-var app = express();
-
-// Setup the configuration
-app.use(cookieParser());
-app.use(bodyParser());
-app.use(session({ secret: 'Dont Tell Anyone!!!'}));
-app.use(passport.initialize());
-app.use(passport.session());
-
-// The login strategy
+// Setup the login strategy
 passport.use(new LocalStrategy(
     {
-        usernameField: 'email',
-        passwordField: 'password'
+        usernameField: 'form-username',
+        passwordField: 'form-password'
     },
     function(email, password, done) {
         User.find({email: email}, function(err, users){
@@ -38,12 +29,12 @@ passport.use(new LocalStrategy(
     })
 );
 
-// How we get the session info
+// Define how we get the session info
 passport.serializeUser(function(user, done) {
     done(null, user._id);
 });
 
-// How we save the session between requests
+// Define how we save the session between requests
 passport.deserializeUser(function(id, done) {
     User.find({_id: id}, function(err, users){
         if (err || users.length !== 1){
@@ -55,23 +46,44 @@ passport.deserializeUser(function(id, done) {
     });
 });
 
-// Test Routes
-app.get('/', function(req, res, next) {
-  res.send('<form method="post" action="/login" role="form"><input type="text" name="email"/><input type="password" name="password"/><button type="submit">Login</button></form>');
+// Login Route
+router.post('/login', passport.authenticate('local'), function(req, res) {
+    console.log("Email", req.body["form-username"], "Password", req.body["form-password"]);
+    res.redirect('/api/whoami'); // TODO: Redirect to the home page
 });
 
-app.post('/login', passport.authenticate('local'), function(req, res, next) {
-    console.log("Email", req.body.email, "Password", req.body.password);
-    res.redirect('/whoami');
+// Signup Route
+router.post('/signup', function(req, res) {
+
+    // Ensure the data is correct
+    if(req.body["form-password"] !== req.body["form-password2"] || !req.body["form-username"]){
+        res.send(400, "Passwords must match");
+    }
+
+    console.log("Creating new user: ", req.body["form-username"]);
+    
+    var usr = new User({
+        email: req.body["form-username"],
+        password: req.body["form-password"]
+    });
+
+    usr.save(function(err){
+        if (err){
+            res.send(500, err);
+        }
+        else {
+            res.send(200)
+        }
+    })
 });
 
-app.get('/whoami', function(req, res, next) {
+router.get('/whoami', function(req, res) {
     res.send({ user: req.user });
 });
 
-app.get('/logout', function(req, res, next) {
+router.get('/logout', function(req, res) {
     req.logout();
     res.send("logged out");
 });
 
-app.listen(8080);
+module.exports = router;

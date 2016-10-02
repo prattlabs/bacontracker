@@ -1,27 +1,28 @@
-var express = require('express')
-var app = express()
+// Import Dependencies
+var express = require('express');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var session = require('express-session');
+var passport = require('passport');
 
-var bodyParser = require('body-parser')
+// Import routes
+var api = require('./routes/api')
 
-app.get('/', function (req, res) {
-  res.send('Hello World')
-})
+// Setup the server
+var app = express();
 
-/** bodyParser.urlencoded(options)
- * Parses the text as URL encoded data (which is how browsers tend to send form data from regular forms set to POST)
- * and exposes the resulting object (containing the keys and values) on req.body
- */
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+// Setup the configuration
+app.use(cookieParser());
+app.use(bodyParser());
+app.use(session({ secret: 'Dont Tell Anyone!!!'}));
+app.use(passport.initialize());
+app.use(passport.session());
 
-/**bodyParser.json(options)
- * Parses the text as JSON and exposes the resulting object on req.body.
- */
-app.use(bodyParser.json());
+// Forward all API calls
+app.use('/api', api);
 
-app.post("/", function (req, res) {
-    console.log(req.body.user.name)
-});
+// Serve the html and static content
+app.use('/', express.static(__dirname + '/views'));
+app.use('/assets', express.static(__dirname + '/assets'));
 
-app.listen(8080)
+app.listen(8080);
