@@ -4,9 +4,11 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var passport = require('passport');
+var mongoose = require('mongoose');
+var winston = require('winston');
 
 // Import routes
-var api = require('./routes/api')
+var api = require('./routes/api');
 
 // Setup the server
 var app = express();
@@ -42,5 +44,14 @@ app.get('/', function (req, res) {
 app.use('/', express.static(__dirname + '/views'));
 app.use('/assets', express.static(__dirname + '/assets'));
 
-app.listen(8080);
-console.log("App is running on port localhost:8080");
+// Connect to the database
+mongoose.connect('mongodb://app:bacon@ds023435.mlab.com:23435/bacon-tracker', function (err) {
+    if (err) {
+        winston.error("Cannot connect to the mongo database " + err);
+        process.exit(1)
+    }
+    else {
+        app.listen(8080);
+        winston.info("App is running on port localhost:8080");
+    }
+});

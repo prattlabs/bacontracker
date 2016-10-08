@@ -5,7 +5,10 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var LocalStrategy = require('passport-local').Strategy;
+var User = require('../models/issue.js');
+var User = require('../models/project.js');
 var User = require('../models/user.js');
+var winston = require('winston');
 var router = express.Router();
 
 // Setup the login strategy
@@ -14,13 +17,13 @@ passport.use(new LocalStrategy(
         usernameField: 'form-username',
         passwordField: 'form-password'
     },
-    function(email, password, done) {
-        User.find({email: email}, function(err, users){
+    function(username, password, done) {
+        User.find({username: username}, function(err, users){
             if (err){
                 return done(err, false);
             }
             else if (!users || users.length !== 1 || !users[0].authenticate(password)) {
-                return done(null, false, { message: 'Incorrect email or password'});
+                return done(null, false, { message: 'Incorrect username or password'});
             }
             else {
                 return done(null, users[0]);
@@ -48,7 +51,7 @@ passport.deserializeUser(function(id, done) {
 
 // Login Route
 router.post('/login', passport.authenticate('local'), function(req, res) {
-    console.log("Email", req.body["form-username"], "Password", req.body["form-password"]);
+    winston.debug("Username", req.body["form-username"], "Password", req.body["form-password"]);
     res.redirect('/api/whoami'); // TODO: Redirect to the home page
 });
 
@@ -60,10 +63,10 @@ router.post('/signup', function(req, res) {
         res.send(400, "Passwords must match");
     }
 
-    console.log("Creating new user: ", req.body["form-username"]);
+    winston.info("Creating new user: ", req.body["form-username"]);
     
     var usr = new User({
-        email: req.body["form-username"],
+        username: req.body["form-username"],
         password: req.body["form-password"]
     });
 

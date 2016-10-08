@@ -1,15 +1,14 @@
 var mongoose = require('mongoose');
 
-mongoose.connect('mongodb://app:bacon@ds023435.mlab.com:23435/bacon-tracker')
-
 // Define the user object
 var userSchema = new mongoose.Schema({
-    email: {type: String, required: true, unique: true},
-    password: {type: String, required: true}
+    username: {type: String, required: true, unique: true},
+    password: {type: String, required: true},
+    projects: [{type: mongoose.Schema.Types.ObjectId, ref: "Project"}],
+    colabProjects: [{type: mongoose.Schema.Types.ObjectId, ref: "Project"}]
 });
 
 userSchema.methods.authenticate = function(password){
-    console.log("Authenticating Password");
     return this.password === password; // TODO: may want to change to password hashes in the future
 }
 
