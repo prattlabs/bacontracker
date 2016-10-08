@@ -7,6 +7,12 @@ var passport = require('passport');
 var mongoose = require('mongoose');
 var winston = require('winston');
 
+// Overwrite mongoose promise library
+mongoose.Promise = global.Promise;
+
+// Set the logging level
+winston.level = "debug";
+
 // Import routes
 var api = require('./routes/api');
 
@@ -20,7 +26,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(session({
-    secret: 'Dont Tell Anyone!!!',
+    secret: '97e5303d0194c1855ff5a508b3fbb7d4',
     resave: true,
     saveUninitialized: false
 }));
@@ -47,7 +53,7 @@ app.use('/assets', express.static(__dirname + '/assets'));
 // Connect to the database
 mongoose.connect('mongodb://app:bacon@ds023435.mlab.com:23435/bacon-tracker', function (err) {
     if (err) {
-        winston.error("Cannot connect to the mongo database " + err);
+        winston.error("Cannot connect to the mongo database ", err);
         process.exit(1)
     }
     else {
