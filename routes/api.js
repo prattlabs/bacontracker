@@ -9,7 +9,7 @@ var User = require('../models/project.js');
 var User = require('../models/user.js');
 
 // ********************
-// Setup the api routes
+// Configure passportjs
 // ********************
 
 // Setup the passport authentication strategy and session serialization
@@ -18,13 +18,41 @@ passport.use(new LocalStrategy(
         usernameField: 'form-username',
         passwordField: 'form-password'
     },
-    localStrategyCallback
-));
-passport.serializeUser(serializeUser);
-passport.deserializeUser(deserializeUser);
+    function (username, password, done) {
+        User.find({ username: username }, function (err, users) {
+            if (err) {
+                return done(err, false);
+            }
+            else if (!users || users.length !== 1 || !users[0].authenticate(password)) {
+                return done(null, false);
+            }
+            else {
+                return done(null, users[0]);
+            }
+        });
+    })
+);
 
-// Define the routes
-router.post('/login', passport.authenticate('local'), login);
+passport.serializeUser(function (user, done) {
+    done(null, user._id);
+});
+
+passport.deserializeUser(function (id, done) {
+    User.find({ _id: id }, function (err, users) {
+        if (err || users.length !== 1) {
+            return done(err, false);
+        }
+        else {
+            return done(null, users[0]);
+        }
+    });
+});
+
+// ***************
+// Open the routes
+// ***************
+
+router.post('/login', login);
 router.post('/signup', signup);
 router.get('/whoami', whoami);
 router.get('/logout', logout);
@@ -40,18 +68,34 @@ router.get('/logout', logout);
  */
 function login(req, res) {
     winston.debug("Inside /api/login");
-    winston.debug(req.user.username, "has just logged in.");
 
-    var resData = {
-        message: "Login was successful",
-        data: {
-            username: req.user.username,
-            projects: req.user.projects,
-            colabProjects: req.user.colabProjects
+    // Perform the login. TODO: This is weird, may need to review this...
+    passport.authenticate('local', function (err, user) {
+        if (err) {
+            handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
         }
-    }
+        else if (!user) {
+            handleError(new Error("Incorrect username or password"), HTTP.UNAUTHORIZED, res);
+        }
+        else {
+            // Serialize the user to the cookie
+            req.login(user, function (err) {
+                if (err) {
+                    handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
+                }
 
-    sendResponse(resData, HTTP.OK, res);
+                winston.debug(user.username, "has just logged in.");
+
+                var resData = {
+                    username: user.username,
+                    projects: user.projects,
+                    colabProjects: user.colabProjects
+                }
+
+                sendResponse(resData, HTTP.OK, res);
+            })
+        }
+    })(req, res);
 };
 
 /**
@@ -63,12 +107,7 @@ function logout(req, res) {
     winston.debug("Inside /api/logout");
     req.logout();
 
-    var resData = {
-        message: "Logout was successful",
-        data: null
-    }
-
-    sendResponse(resData, HTTP.OK, res)
+    sendResponse(null, HTTP.OK, res)
 }
 
 /**
@@ -84,27 +123,34 @@ function signup(req, res) {
         handleError(new Error("Passwords do not match"), HTTP.BAD_REQUEST, res);
     }
 
-    var usr = new User({
+    var user = new User({
         username: req.body["form-username"],
         password: req.body["form-password"]
     });
 
-    usr.save(function (err) {
+    // Save the new user
+    user.save(function (err) {
         if (err) {
             handleError(err, 500, res);
         }
         else {
-            winston.debug("User created", usr.username)
-            var resData = {
-                message: "User creation successful",
-                data: {
-                    username: req.user.username,
-                    projects: req.user.projects,
-                    colabProjects: req.user.colabProjects
-                }
-            }
+            winston.debug("User created", user.username);
 
-            sendResponse(resData, HTTP.OK, res)
+            // Serialize the user to the cookie
+            req.login(user, function (err) {
+                if (err) {
+                    handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
+                }
+
+                winston.debug(user.username, "has just logged in.");
+                var resData = {
+                    username: user.username,
+                    projects: user.projects,
+                    colabProjects: user.colabProjects
+                };
+
+                sendResponse(resData, HTTP.OK, res)
+            });
         }
     })
 };
@@ -120,62 +166,14 @@ function whoami(req, res) {
     }
     else {
         var resData = {
-            message: "User identified",
-            data: {
-                username: req.user.username,
-                projects: req.user.projects,
-                colabProjects: req.user.colabProjects
-            }
+            username: req.user.username,
+            projects: req.user.projects,
+            colabProjects: req.user.colabProjects
         }
 
         sendResponse(resData, HTTP.OK, res)
     }
 };
-
-/**
- * This function is used by Passport.js to find a user from an active cookie.
- * @param id The user id from the serialized cookie
- * @param done The callback to signal the function is done
- */
-function deserializeUser(id, done) {
-    User.find({ _id: id }, function (err, users) {
-        if (err || users.length !== 1) {
-            return done(err, false);
-        }
-        else {
-            return done(null, users[0]);
-        }
-    });
-}
-
-/**
- * This function is used by Passport.js to save enough information about the user 
- * to a cookie.  This will allow the session to continue with the next request.
- * @param user The user object to be saved in the session
- * @param done The callback to signal the function is done
- */
-function serializeUser(user, done) {
-    done(null, user._id);
-}
-
-/**
- * This function is used by Passport.js to confirm login credentials.
- * @param username The username to be validated
- * @param password The password to be validated
- */
-function localStrategyCallback(username, password, done) {
-    User.find({ username: username }, function (err, users) {
-        if (err) {
-            return done(err, false);
-        }
-        else if (!users || users.length !== 1 || !users[0].authenticate(password)) {
-            return done(null, false, { message: 'Incorrect username or password' });
-        }
-        else {
-            return done(null, users[0]);
-        }
-    });
-}
 
 /**
  * This function is a helper for handling errors.
@@ -198,12 +196,7 @@ function handleError(error, status, res) {
             winston.error("Something unexpected happened:", error.message);
     }
 
-    var resData = {
-        message: error.message, // TODO: Probably don't want to send backend messages to the UI'
-        data: null
-    }
-
-    sendResponse(resData, status, res);
+    sendResponse(null, status, res);
 }
 
 /**
@@ -214,7 +207,12 @@ function handleError(error, status, res) {
  */
 function sendResponse(data, status, res) {
     winston.info("Sending response with data:", data);
-    res.status(status).send(data)
+    if (data) {
+        res.status(status).send(data);
+    }
+    else {
+        res.status(status).send(HTTP.getStatusText(status));
+    }
 }
 
 module.exports = router;
