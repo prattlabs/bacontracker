@@ -1,0 +1,11 @@
+body {
+    padding: 15px;
+}
+
+.edit {
+    padding: 5px;
+}
+
+.edit:hover {
+    color: orange;
+}
