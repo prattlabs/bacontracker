@@ -62,12 +62,6 @@ mongoose.connect('mongodb://app:bacon@ds023435.mlab.com:23435/bacon-tracker', fu
     }
 });
 
-// define model =================
-var Issue = mongoose.model('Issue', {
-    title : String,
-    description : String
-});
-
 // define route for retrieving issues
 app.get('/api/issues', function(req, res) {
 
