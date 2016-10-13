@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js" integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU" crossorigin="anonymous"></script>
+  <script src="http://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/jquery.jeditable/1.7.3/jquery.jeditable.js"></script>
+  <script>
+    $(document).ready(function() {
+      $(".accordion").accordion({
+        //
+        // Accordion lets the tickets unfold and show their contents.
+        //
+        collapsible: true,
+        header: "> div > h3"
+      }).sortable({
+        //
+        // Sortable lets you sort the tickets.
+        //
+        axis: "y",
+        handle: "h3",
+        stop: function(event, ui) {
+          // IE doesn't register the blur when sorting
+          // so trigger focusout handlers to remove .ui-state-focus
+          ui.item.children("h3").triggerHandler("focusout");
+
+          // Refresh accordion to handle new order
+          $(this).accordion("refresh");
+        }
+      });
+      //
+      //  Editable lets you edit text inline, and sends a post to the url in the first parameter.
+      //
+      $(".edit").editable("#", {
+        style: 'display: inline',
+        // indicator: '<img src="img/indicator.gif">',
+        // tooltip   : 'Click to edit...'
+      });
+    });
+  </script>
+</head>
+
+<body class="container">
+
+  <nav class="navbar navbar-light bg-faded">
+    <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2" aria-controls="exCollapsingNavbar2" aria-expanded="false" aria-label="Toggle navigation"></button>
+    <div class="collapse navbar-toggleable-xs" id="exCollapsingNavbar2">
+      <a class="navbar-brand" href="#">Bacon Tracker</a>
+      <ul class="nav navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Projects<span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Account</a>
+        </li>
+
+      </ul>
+      <a class="nav-link pull-xs-right" style="color: #000; float: right; padding-top: 7px;" href="#">Cameron Lengerich</a>
+    </div>
+  </nav>
+
+  <br>
+
+  <div id="content">
+
+    <div id="projectsOwned">
+      <h3>Projects you own</h3>
+
+      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-3">
+        <div class="card card-block">
+          <h4 class="card-title">TowneScope</h4>
+          <p class="card-text">Market Your Towne!</p>
+          <button class="btn btn-danger" type="button" name="open">Open</button>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-3">
+        <div class="card card-block">
+          <h4 class="card-title">eGenuity Installer</h4>
+          <p class="card-text">Installer for eGenuity.</p>
+          <button class="btn btn-danger" type="button" name="open">Open</button>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-3">
+        <div class="card card-block">
+          <h4 class="card-title">eGenuity Installer</h4>
+          <p class="card-text">Installer for eGenuity.</p>
+          <button class="btn btn-danger" type="button" name="open">Open</button>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-3">
+        <div class="card card-block">
+          <h4 class="card-title">eGenuity Installer</h4>
+          <p class="card-text">Installer for eGenuity.</p>
+          <button class="btn btn-danger" type="button" name="open">Open</button>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-3">
+        <div class="card card-block">
+          <h4 class="card-title">eGenuity Installer</h4>
+          <p class="card-text">Installer for eGenuity.</p>
+          <button class="btn btn-danger" type="button" name="open">Open</button>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-3">
+        <div class="card card-block">
+          <h4 class="card-title">eGenuity Installer</h4>
+          <p class="card-text">Installer for eGenuity.</p>
+          <button class="btn btn-danger" type="button" name="open">Open</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="clearfix"></div>
+    <br>
+    <hr>
+    <br>
+
+    <div class="container">
+      <div id="projectsCollaborated">
+        <h3>Projects you collaborate on</h3>
+
+        <div class="col-sm-6 col-xs-12 col-md-4 col-lg-3">
+          <div class="card card-block">
+            <h4 class="card-title">TowneScope</h4>
+            <p class="card-text">Market Your Towne!</p>
+            <button class="btn btn-danger" type="button" name="open">Open</button>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-xs-12 col-md-4 col-lg-3">
+          <div class="card card-block">
+            <h4 class="card-title">eGenuity Installer</h4>
+            <p class="card-text">Installer for eGenuity.</p>
+            <button class="btn btn-danger" type="button" name="open">Open</button>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-xs-12 col-md-4 col-lg-3">
+          <div class="card card-block">
+            <h4 class="card-title">eGenuity Installer</h4>
+            <p class="card-text">Installer for eGenuity.</p>
+            <button class="btn btn-danger" type="button" name="open">Open</button>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-xs-12 col-md-4 col-lg-3">
+          <div class="card card-block">
+            <h4 class="card-title">eGenuity Installer</h4>
+            <p class="card-text">Installer for eGenuity.</p>
+            <button class="btn btn-danger" type="button" name="open">Open</button>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-xs-12 col-md-4 col-lg-3">
+          <div class="card card-block">
+            <h4 class="card-title">eGenuity Installer</h4>
+            <p class="card-text">Installer for eGenuity.</p>
+            <button class="btn btn-danger" type="button" name="open">Open</button>
+          </div>
+        </div>
+
+      </div>
+</body>
+
+</html>

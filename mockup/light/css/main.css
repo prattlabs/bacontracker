@@ -1,11 +1,33 @@
 body {
     padding: 15px;
+    background-color: #e53b3b;
+    color: #fff;
 }
 
-.edit {
+/*.edit {
     padding: 5px;
+}*/
+
+/*.edit:hover {
+    color: #e53b3b;
+}*/
+
+.ui-accordion-header {
+  background-color: #eebf77;
+  outline-color: #eebf77 !important;
 }
 
-.edit:hover {
-    color: orange;
+.ui-accordion-header .ui-corner-top .ui-state-default
+.ui-accordion-header-active .ui-state-active
+.ui-accordion-icons .ui-sortable-handle {
+  background-color: #eebf77;
+  outline-color: #eebf77 !important;
+}
+
+.btn-danger {
+  background-color: #e53b3b;
+}
+
+.card-block {
+  color: #000;
 }
