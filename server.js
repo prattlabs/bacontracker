@@ -61,3 +61,8 @@ mongoose.connect('mongodb://app:bacon@ds023435.mlab.com:23435/bacon-tracker', fu
         winston.info("App is running on port localhost:8080");
     }
 });
+
+// Handle shutdown
+process.on('SIGINT', function() {
+  process.exit();
+});
