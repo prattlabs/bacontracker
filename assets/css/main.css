@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css?family=Lobster');
+
+body {
+    padding: 1em;
+    color: #fff;
+    background-image: url('../img/backgrounds/table.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.btn-danger {
+  background-color: #e53b3b;
+  float: right;
+}
+
+.btn-danger:active {
+  background-color: #eebf77 !important;
+  border-color: #eebf77 !important;
+}
+
+.card-block {
+  color: #000;
+  opacity: 0.96;
+}
+
+.projectsOwned {
+  padding-bottom: 9em;
+}
+
+#logo {
+  font-family: 'Lobster';
+  font-size: 14pt;
+}
+
+.account-name-nav {
+  color: #000;
+  float: right;
+  padding-top: 7px;
+}
+
+.account-name-nav:hover {
+  color: #e53b3b;
+}
+
+.account-name-issue {
+  color: #000;
+  float: right;
+}
+
+.account-name-issue:hover {
+  color: #000;
+  float: right;
+  color: #e53b3b
+}
+
+input[type=checkbox] {
+  margin-right: 1em;
+}
+
+input[type=text]:focus {
+  border-color: #e53b3b;
+}
