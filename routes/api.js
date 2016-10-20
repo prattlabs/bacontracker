@@ -114,7 +114,8 @@ function login(req, res) {
                     colabProjects: user.colabProjects
                 }
 
-                sendResponse(resData, HTTP.OK, res);
+                // sendResponse(resData, HTTP.OK, res); TODO: Make the front end redirect
+                res.redirect("/projects.html");
             })
         }
     })(req, res);
