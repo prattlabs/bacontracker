@@ -9,8 +9,10 @@ body {
 }
 
 .btn-danger {
-  background-color: #e53b3b;
+  background-color: #fff;
   float: right;
+  border-color: #e53b3b;
+  color: #e53b3b;
 }
 
 .btn-danger:active {
