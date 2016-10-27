@@ -1,4 +1,4 @@
-// Import the dependencies 
+// Import the dependencies
 var passport = require('passport');
 var winston = require('winston');
 var HTTP = require('http-status-codes');
@@ -18,34 +18,36 @@ passport.use(new LocalStrategy(
         usernameField: 'form-username',
         passwordField: 'form-password'
     },
-    function (username, password, done) {
-        User.find({ username: username }, function (err, users) {
+    (username, password, done) => {
+        User.find({ username: username }, (err, users) => {
             if (err) {
-                return done(err, false);
+                done(err, false);
             }
             else if (!users || users.length !== 1 || !users[0].authenticate(password)) {
-                return done(null, false);
+                done(null, false);
             }
             else {
                 // Populate the projects
                 var usr = users[0];
-                usr.populate("projects colabProjects", function (err) {
+                usr.populate("projects colabProjects", (err) => {
                     if (err) {
-                        return done(err, false);
+                        done(err, false);
                     }
-                    return done(null, users[0]);
+                    else {
+                        done(null, users[0]);
+                    }
                 });
             }
         });
     })
 );
 
-passport.serializeUser(function (user, done) {
+passport.serializeUser((user, done) => {
     done(null, user._id);
 });
 
-passport.deserializeUser(function (id, done) {
-    User.find({ _id: id }, function (err, users) {
+passport.deserializeUser((id, done) => {
+    User.find({ _id: id }, (err, users) => {
         if (err || users.length !== 1) {
             return done(err, false);
         }
@@ -59,36 +61,7 @@ passport.deserializeUser(function (id, done) {
 // Open the routes
 // ***************
 
-router.post('/login', login);
-router.get('/logout', logout);
-router.post('/signup', signup);
-router.get('/whoami', whoami);
-
-router.get('/projects/:projName', getProject);
-router.post('/projects', postProject);
-router.put('/projects/:projName', putProject);
-// router.del('/projects/:projName', delProject);
-
-// router.get('/issues/:projName/:issueNum', getIssue);
-// router.post('/issues', postIssue);
-// router.put('/issues/:projName/:issueNum', putIssue);
-// router.del('/issues/:projName/:issueNum', delIssue);
-
-// router.get('/users/:userID', getUser);
-// router.post('/users', postUser);
-// router.put('/users/:userID', putUser);
-// router.del('/users/:userID', delUser);
-
-// ********************
-// Define the functions
-// ********************
-
-/**
- * This function handles the final stages of the login process.
- * @param req The express request object
- * @param res The express response object
- */
-function login(req, res) {
+router.post('/login', (req, res) => {
     winston.debug("Inside /api/login");
 
     // Perform the login. TODO: This is weird, may need to review this...
@@ -119,26 +92,16 @@ function login(req, res) {
             })
         }
     })(req, res);
-};
+});
 
-/**
- * This function triggers a logout.
- * @param req The express request object
- * @param res The express response object
- */
-function logout(req, res) {
+router.get('/logout', (req, res) => {
     winston.debug("Inside /api/logout");
     req.logout();
 
-    sendResponse(null, HTTP.OK, res)
-}
+    sendResponse(null, HTTP.OK, res);
+});
 
-/**
- * This function handles a user signup.
- * @param req The express request object
- * @param res The express response object
- */
-function signup(req, res) {
+router.post('/signup', (req, res) => {
     winston.debug("Inside /api/signup");
 
     // Ensure the data is correct
@@ -177,14 +140,9 @@ function signup(req, res) {
             });
         }
     })
-};
+});
 
-/**
- * This function returns the user's object to the UI.
- * @param req The express request object
- * @param res The express response object
- */
-function whoami(req, res) {
+router.get('/whoami', (req, res) => {
     if (!req.user) {
         handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res)
     }
@@ -197,7 +155,146 @@ function whoami(req, res) {
 
         sendResponse(resData, HTTP.OK, res)
     }
-};
+});
+
+router.get('/projects/:projName', (req, res) => {
+    if (!req.user) {
+        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
+    }
+    else if (!req.params || !req.params.projName) {
+        handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+    }
+    else {
+        var reqProj = req.user.projects.find(function (project) {
+            return project.name === req.params.projName
+        });
+        if (reqProj) {
+            sendResponse(reqProj, HTTP.OK, res);
+        }
+        else {
+            sendResponse(null, HTTP.NOT_FOUND, res);
+        }
+    }
+});
+
+router.post('/projects', (req, res) => {
+    if (!req.user) {
+        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
+    }
+    else if (!req.body || !req.body.projName || !req.body.projDescription) {
+        handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+    }
+    else {
+        // Make new project
+        var newProj = new Project({
+            name: req.body.projName,
+            description: req.body.projDescription,
+            issues: []
+        });
+
+        // Save new project
+        newProj.save(function (err) {
+            if (err) {
+                handleError(new Error("Database save error"), HTTP.INTERNAL_SERVER_ERROR, res);
+            }
+            else {
+                // Save the new project to the user
+                req.user.projects.push(newProj);
+                req.user.save(function (err) {
+                    if (err) {
+                        handleError(new Error("Database save error"), HTTP.INTERNAL_SERVER_ERROR, res);
+                    }
+                    else {
+
+                        // Send success
+                        sendResponse(project, HTTP.OK, res);
+                    }
+                });
+            }
+        });
+    }
+});
+
+router.put('/projects/:projName', (req, res) => {
+    if (!req.user) {
+        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
+    }
+    else if (!req.params || !req.params.projName || !req.body) {
+        handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+    }
+    else {
+        // Check if the project is on the user's object
+        var reqProj = req.user.projects.find(function (project) {
+            return project.name === req.params.projName
+        });
+        if (!reqProj) {
+            handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+        }
+        else {
+
+            // Update project
+            var proj = projs[0];
+            proj.name = req.body.projName ? req.body.projName : proj.name;
+            proj.name = req.body.projDescription ? req.body.projDescription : proj.description;
+
+            proj.save(function (err) {
+                if (err) {
+                    handleError(new Error("Database save error"), HTTP.INTERNAL_SERVER_ERROR, res);
+                }
+                else {
+                    sendResponse(proj, HTTP.OK, res);
+                }
+            });
+        }
+    }
+});
+
+router.delete('/projects/:projName', (req, res) => {
+    if (!req.user) {
+        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
+    }
+    else if (!req.params || !req.params.projName) {
+        handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+    }
+    else {
+        // Check if the project is on the user's object
+        var reqProj = req.user.projects.find(function (project) {
+            return project.name === req.params.projName
+        });
+        if (!reqProj) {
+            handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+        }
+        else {
+            // Delete the project from all users
+            User.find({colabProjects: reqProj}, (err, users) => {
+                if (err) {
+                    handleError(new Error("Database read error"), HTTP.INTERNAL_SERVER_ERROR, res);
+                }
+                users.forEach((usr) => {
+                    user.projects.splice(req.user.projects.indexOf(reqProj), 1);
+                    user.colabProjects.splice(req.user.projects.indexOf(reqProj), 1);
+                });
+                
+                // Send success
+                sendResponse(reqProj, HTTP.OK, res);
+            });
+        }
+    }
+});
+
+// router.get('/issues/:projName/:issueNum', getIssue);
+// router.post('/issues', postIssue);
+// router.put('/issues/:projName/:issueNum', putIssue);
+// router.del('/issues/:projName/:issueNum', delIssue);
+
+// router.get('/users/:userID', getUser);
+// router.post('/users', postUser);
+// router.put('/users/:userID', putUser);
+// router.del('/users/:userID', delUser);
+
+// ********************
+// Define the functions
+// ********************
 
 /**
  * This function is a helper for handling errors.
@@ -238,138 +335,5 @@ function sendResponse(data, status, res) {
         res.status(status).send(HTTP.getStatusText(status));
     }
 };
-
-/**
- * This function handles the get operation for a project.
- * @param req The express request object
- * @param res The express response object
- */
-function getProject(req, res) {
-    if (!req.user) {
-        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
-    }
-    else if (!req.params || !rep.params.projName) {
-        handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
-    }
-    else {
-        var reqProj = req.user.projects.find(function (project) {
-            return project.name === req.params.projName
-        });
-        if (reqProj) {
-            sendResponse(reqProj, HTTP.OK, res);
-        }
-        else {
-            sendResponse(null, req.NOT_FOUND, res);
-        }
-    }
-};
-
-/**
- * This function handles the post operation for a project.
- * @param req The express request object
- * @param res The express response object
- */
-function postProject(req, res) {
-    if (!req.user) {
-        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
-    }
-    else if (!req.body || !req.body.name || !req.body.description) {
-        handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
-    }
-    else {
-        // Make new project
-        var newProj = new Project({
-            name: req.body.projName,
-            description: req.body.projDescription,
-            issues: []
-        });
-
-        // Save new project
-        newProj.save(function (err) {
-            if (err) {
-                handleError(new Error("Database save error"), HTTP.INTERNAL_SERVER_ERROR, res);
-            }
-            else {
-                // Save the new project to the user
-                req.user.projects.push(newProj);
-                req.user.save(function (err) {
-                    if (err) {
-                        handleError(new Error("Database save error"), HTTP.INTERNAL_SERVER_ERROR, res);
-                    }
-                    else {
-
-                        // Send success
-                        sendResponse(project, HTTP.OK, res);
-                    }
-                });
-            }
-        });
-    }
-};
-
-/**
- * This function handles the put operation for a project.
- * @param req The express request object
- * @param res The express response object
- */
-function putProject(req, res) {
-    if (!req.user) {
-        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
-    }
-    else if (!req.params || !req.params.projName || !req.body) {
-        handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
-    }
-    else {
-        // Check if the project is on the user's object
-        var reqProj = req.user.projects.find(function (project) {
-            return project.name === req.params.projName
-        });
-        if (!reqProj) {
-            handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
-        }
-        else {
-
-            // Update project
-            var proj = projs[0];
-            proj.name = req.body.projName ? req.body.projName : proj.name;
-            proj.name = req.body.projDescription ? req.body.projDescription : proj.description;
-
-            proj.save(function (err) {
-                if (err) {
-                    handleError(new Error("Database save error"), HTTP.INTERNAL_SERVER_ERROR, res);
-                }
-                else {
-                    sendResponse(proj, HTTP.OK, res);
-                }
-            });
-        }
-    }
-};
-
-/**
- * This function handles the delete operation for a project.
- * @param req The express request object
- * @param res The express response object
- */
-// function delProject(req, res) {
-//     if (!req.user) {
-//         handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
-//     }
-//     else if (!req.params || !req.params.projName) {
-//         handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
-//     }
-//     else {
-//         // Check if the project is on the user's object
-//         var reqProj = req.user.projects.find(function (project) {
-//             return project.name === req.params.projName
-//         });
-//         if (!reqProj) {
-//             handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
-//         }
-//         else {
-//             req.user.projects.
-//         }
-//     }
-// };
 
 module.exports = router;
