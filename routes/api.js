@@ -8,9 +8,9 @@ var Issue = require('../models/issue.js');
 var Project = require('../models/project.js');
 var User = require('../models/user.js');
 
-// ********************
-// Configure passportjs
-// ********************
+// *****************************************************************
+// * Configure passportjs
+// *****************************************************************
 
 // Setup the passport authentication strategy and session serialization
 passport.use(new LocalStrategy(
@@ -52,20 +52,29 @@ passport.deserializeUser((id, done) => {
             return done(err, false);
         }
         else {
-            return done(null, users[0]);
+            // Populate the projects
+            var usr = users[0];
+            usr.populate("projects colabProjects", (err) => {
+                if (err) {
+                    done(err, false);
+                }
+                else {
+                    done(null, users[0]);
+                }
+            });
         }
     });
 });
 
-// ***************
-// Open the routes
-// ***************
+// *****************************************************************
+// * Open the routes
+// *****************************************************************
 
 router.post('/login', (req, res) => {
     winston.debug("Inside /api/login");
 
     // Perform the login. TODO: This is weird, may need to review this...
-    passport.authenticate('local', function (err, user) {
+    passport.authenticate('local', (err, user) => {
         if (err) {
             handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
         }
@@ -74,7 +83,7 @@ router.post('/login', (req, res) => {
         }
         else {
             // Serialize the user to the cookie
-            req.login(user, function (err) {
+            req.login(user, (err) => {
                 if (err) {
                     handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
                 }
@@ -87,8 +96,7 @@ router.post('/login', (req, res) => {
                     colabProjects: user.colabProjects
                 }
 
-                // sendResponse(resData, HTTP.OK, res); TODO: Make the front end redirect
-                res.redirect("/projects.html");
+                sendResponse(resData, HTTP.OK, res);
             })
         }
     })(req, res);
@@ -96,6 +104,7 @@ router.post('/login', (req, res) => {
 
 router.get('/logout', (req, res) => {
     winston.debug("Inside /api/logout");
+
     req.logout();
 
     sendResponse(null, HTTP.OK, res);
@@ -115,7 +124,7 @@ router.post('/signup', (req, res) => {
     });
 
     // Save the new user
-    user.save(function (err) {
+    user.save((err) => {
         if (err) {
             handleError(err, 500, res);
         }
@@ -123,7 +132,7 @@ router.post('/signup', (req, res) => {
             winston.debug("User created", user.username);
 
             // Serialize the user to the cookie
-            req.login(user, function (err) {
+            req.login(user, (err) => {
                 if (err) {
                     handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
                 }
@@ -143,6 +152,8 @@ router.post('/signup', (req, res) => {
 });
 
 router.get('/whoami', (req, res) => {
+    winston.debug("Inside /api/whoami");
+
     if (!req.user) {
         handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res)
     }
@@ -157,17 +168,28 @@ router.get('/whoami', (req, res) => {
     }
 });
 
-router.get('/projects/:projName', (req, res) => {
+router.get('/projects', (req, res) => {
+    winston.debug("Inside GET /api/projects");
+
     if (!req.user) {
         handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
     }
-    else if (!req.params || !req.params.projName) {
+    else if (!req.query || !req.query.pname) {
         handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
     }
     else {
-        var reqProj = req.user.projects.find(function (project) {
-            return project.name === req.params.projName
+        // Check if the user owns the project
+        var reqProj = req.user.projects.find((project) => {
+            return project.name === req.query.pname
         });
+
+        // If not found check if it's a colab project
+        if (!reqProj) {
+            reqProj = req.user.colabProjects.find((project) => {
+                return project.name === req.query.pname
+            });
+        }
+
         if (reqProj) {
             sendResponse(reqProj, HTTP.OK, res);
         }
@@ -178,36 +200,38 @@ router.get('/projects/:projName', (req, res) => {
 });
 
 router.post('/projects', (req, res) => {
+    winston.debug("Inside POST /api/projects");
+
     if (!req.user) {
         handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
     }
-    else if (!req.body || !req.body.projName || !req.body.projDescription) {
+    else if (!req.body || !req.body.pname || !req.body.projDescription) {
         handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
     }
     else {
         // Make new project
         var newProj = new Project({
-            name: req.body.projName,
+            name: req.body.pname,
             description: req.body.projDescription,
             issues: []
         });
 
         // Save new project
-        newProj.save(function (err) {
+        newProj.save((err) => {
             if (err) {
                 handleError(new Error("Database save error"), HTTP.INTERNAL_SERVER_ERROR, res);
             }
             else {
                 // Save the new project to the user
                 req.user.projects.push(newProj);
-                req.user.save(function (err) {
+                req.user.save((err) => {
                     if (err) {
                         handleError(new Error("Database save error"), HTTP.INTERNAL_SERVER_ERROR, res);
                     }
                     else {
 
                         // Send success
-                        sendResponse(project, HTTP.OK, res);
+                        sendResponse(newProj, HTTP.OK, res);
                     }
                 });
             }
@@ -215,66 +239,72 @@ router.post('/projects', (req, res) => {
     }
 });
 
-router.put('/projects/:projName', (req, res) => {
+router.put('/projects', (req, res) => {
+    winston.debug("Inside PUT /api/projects");
+
     if (!req.user) {
         handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
     }
-    else if (!req.params || !req.params.projName || !req.body) {
+    else if (!req.query || !req.query.pname || !req.body) {
         handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
     }
     else {
         // Check if the project is on the user's object
-        var reqProj = req.user.projects.find(function (project) {
-            return project.name === req.params.projName
+        var reqProj = req.user.projects.find((project) => {
+            return project.name === req.query.pname
         });
         if (!reqProj) {
             handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
         }
         else {
 
-            // Update project
-            var proj = projs[0];
-            proj.name = req.body.projName ? req.body.projName : proj.name;
-            proj.name = req.body.projDescription ? req.body.projDescription : proj.description;
+            reqProj.name = req.body.pname ? req.body.pname : proj.name;
+            reqProj.description = req.body.projDescription ? req.body.projDescription : proj.description;
 
-            proj.save(function (err) {
+            reqProj.save((err) => {
                 if (err) {
                     handleError(new Error("Database save error"), HTTP.INTERNAL_SERVER_ERROR, res);
                 }
                 else {
-                    sendResponse(proj, HTTP.OK, res);
+                    sendResponse(reqProj, HTTP.OK, res);
                 }
             });
         }
     }
 });
 
-router.delete('/projects/:projName', (req, res) => {
+router.delete('/projects', (req, res) => {
+    winston.debug("Inside DELETE /api/projects");
+
     if (!req.user) {
         handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
     }
-    else if (!req.params || !req.params.projName) {
+    else if (!req.query || !req.query.pname) {
         handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
     }
     else {
         // Check if the project is on the user's object
-        var reqProj = req.user.projects.find(function (project) {
-            return project.name === req.params.projName
+        var reqProj = req.user.projects.find((project) => {
+            return project.name === req.query.pname
         });
         if (!reqProj) {
             handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
         }
         else {
             // Delete the project from all users
-            User.find({colabProjects: reqProj}, (err, users) => {
+            User.find({ $or: [{ colabProjects: reqProj }, { projects: reqProj }] }, (err, users) => {
                 if (err) {
                     handleError(new Error("Database read error"), HTTP.INTERNAL_SERVER_ERROR, res);
                 }
                 users.forEach((usr) => {
-                    user.projects.splice(req.user.projects.indexOf(reqProj), 1);
-                    user.colabProjects.splice(req.user.projects.indexOf(reqProj), 1);
+                    usr.projects.splice(req.user.projects.indexOf(reqProj), 1);
+                    usr.colabProjects.splice(req.user.projects.indexOf(reqProj), 1);
+                    usr.save();
                 });
-                
+
+                // Delete the project
+                reqProj.remove();
+
                 // Send success
                 sendResponse(reqProj, HTTP.OK, res);
             });
@@ -282,19 +312,18 @@ router.delete('/projects/:projName', (req, res) => {
     }
 });
 
-// router.get('/issues/:projName/:issueNum', getIssue);
 // router.post('/issues', postIssue);
-// router.put('/issues/:projName/:issueNum', putIssue);
-// router.del('/issues/:projName/:issueNum', delIssue);
+// router.put('/issues/:pname/:issueNum', putIssue);
+// router.del('/issues/:pname/:issueNum', delIssue);
 
 // router.get('/users/:userID', getUser);
 // router.post('/users', postUser);
 // router.put('/users/:userID', putUser);
 // router.del('/users/:userID', delUser);
 
-// ********************
-// Define the functions
-// ********************
+// *****************************************************************
+// * Define helper functions
+// *****************************************************************
 
 /**
  * This function is a helper for handling errors.
@@ -327,7 +356,7 @@ function handleError(error, status, res) {
  * @param res The express response object
  */
 function sendResponse(data, status, res) {
-    winston.info("Sending response with data:", data);
+    winston.info("Sending response with status:", status);
     if (data) {
         res.status(status).send(data);
     }
