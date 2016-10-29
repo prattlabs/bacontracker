@@ -151,23 +151,6 @@ router.post('/signup', (req, res) => {
     })
 });
 
-router.get('/whoami', (req, res) => {
-    winston.debug("Inside /api/whoami");
-
-    if (!req.user) {
-        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res)
-    }
-    else {
-        var resData = {
-            username: req.user.username,
-            projects: req.user.projects,
-            colabProjects: req.user.colabProjects
-        }
-
-        sendResponse(resData, HTTP.OK, res)
-    }
-});
-
 router.get('/projects', (req, res) => {
     winston.debug("Inside GET /api/projects");
 
@@ -412,7 +395,7 @@ router.put('/issues', (req, res) => {
                 issue.title = req.body.ititle ? req.body.ititle : issue.title;
                 issue.description = req.body.idescription ? req.body.idescription : issue.description;
                 issue.state = req.body.istate ? req.body.istate : issue.state;
-                issue.asignee = req.body.iasignee ? req.body.iasignee : issue.asignee;
+                issue.assignee = req.body.iassignee ? req.body.iassignee : issue.assignee;
 
                 issue.save((err) => {
                     if (err) {
@@ -460,10 +443,46 @@ router.delete('/issues', (req, res) => {
     }
 });
 
-// router.get('/users/:userID', getUser);
-// router.post('/users', postUser);
-// router.put('/users/:userID', putUser);
-// router.del('/users/:userID', delUser);
+router.get('/currentUser', (req, res) => {
+    winston.debug("Inside GET /api/currentUser");
+
+    if (!req.user) {
+        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res)
+    }
+    else {
+        var resData = {
+            username: req.user.username,
+            projects: req.user.projects,
+            colabProjects: req.user.colabProjects
+        }
+
+        sendResponse(resData, HTTP.OK, res)
+    }
+});
+
+router.put('/currentUser', (req, res) => {
+    winston.debug("Inside GET /api/currentUser");
+
+    if (!req.user) {
+        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res)
+    }
+    else if (!req.body) {
+        handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+    }
+    else {
+
+        user.username = req.body.uname ? req.body.uname : user.username;
+
+        user.save((err) => {
+            if (err) {
+                handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
+            }
+            else {
+                sendResponse(resData, HTTP.OK, res);
+            }
+        })
+    }
+});
 
 // *****************************************************************
 // * Define helper functions
