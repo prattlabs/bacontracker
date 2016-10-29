@@ -368,7 +368,7 @@ router.post('/issues', (req, res) => {
                 else {
                     // Save the new issue to the project
                     reqProj.issues.push(newIssue);
-                    reqProj.nextinum++;
+                    reqProj._nextinum++;
                     reqProj.save((err) => {
                         if (err) {
                             handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
