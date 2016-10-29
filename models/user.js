@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var deepPopulate = require('mongoose-deep-populate')(mongoose);
 
 // Define the user object
 var userSchema = new mongoose.Schema({
@@ -11,6 +12,8 @@ var userSchema = new mongoose.Schema({
 userSchema.methods.authenticate = function(password){
     return this.password === password; // TODO: may want to change to password hashes in the future
 }
+
+userSchema.plugin(deepPopulate);
 
 var User = mongoose.model('User', userSchema);
 

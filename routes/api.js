@@ -29,12 +29,12 @@ passport.use(new LocalStrategy(
             else {
                 // Populate the projects
                 var usr = users[0];
-                usr.populate("projects colabProjects", (err) => {
+                User.deepPopulate(usr, "projects.issues colabProjects.issues", () => {
                     if (err) {
                         done(err, false);
                     }
                     else {
-                        done(null, users[0]);
+                        done(null, usr);
                     }
                 });
             }
@@ -54,12 +54,12 @@ passport.deserializeUser((id, done) => {
         else {
             // Populate the projects
             var usr = users[0];
-            usr.populate("projects colabProjects", (err) => {
+            User.deepPopulate(usr, "projects.issues colabProjects.issues", () => {
                 if (err) {
                     done(err, false);
                 }
                 else {
-                    done(null, users[0]);
+                    done(null, usr);
                 }
             });
         }
@@ -178,17 +178,8 @@ router.get('/projects', (req, res) => {
         handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
     }
     else {
-        // Check if the user owns the project
-        var reqProj = req.user.projects.find((project) => {
-            return project.name === req.query.pname
-        });
-
-        // If not found check if it's a colab project
-        if (!reqProj) {
-            reqProj = req.user.colabProjects.find((project) => {
-                return project.name === req.query.pname
-            });
-        }
+        // Find the project
+        var reqProj = findProject(req.user, req.qery.pname);
 
         if (reqProj) {
             sendResponse(reqProj, HTTP.OK, res);
@@ -205,28 +196,28 @@ router.post('/projects', (req, res) => {
     if (!req.user) {
         handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
     }
-    else if (!req.body || !req.body.pname || !req.body.projDescription) {
+    else if (!req.body || !req.body.pname || !req.body.pdescription) {
         handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
     }
     else {
         // Make new project
         var newProj = new Project({
             name: req.body.pname,
-            description: req.body.projDescription,
+            description: req.body.pdescription,
             issues: []
         });
 
         // Save new project
         newProj.save((err) => {
             if (err) {
-                handleError(new Error("Database save error"), HTTP.INTERNAL_SERVER_ERROR, res);
+                handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
             }
             else {
                 // Save the new project to the user
                 req.user.projects.push(newProj);
                 req.user.save((err) => {
                     if (err) {
-                        handleError(new Error("Database save error"), HTTP.INTERNAL_SERVER_ERROR, res);
+                        handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
                     }
                     else {
 
@@ -259,11 +250,11 @@ router.put('/projects', (req, res) => {
         else {
 
             reqProj.name = req.body.pname ? req.body.pname : proj.name;
-            reqProj.description = req.body.projDescription ? req.body.projDescription : proj.description;
+            reqProj.description = req.body.pdescription ? req.body.pdescription : proj.description;
 
             reqProj.save((err) => {
                 if (err) {
-                    handleError(new Error("Database save error"), HTTP.INTERNAL_SERVER_ERROR, res);
+                    handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
                 }
                 else {
                     sendResponse(reqProj, HTTP.OK, res);
@@ -302,6 +293,11 @@ router.delete('/projects', (req, res) => {
                     usr.save();
                 });
 
+                // Delete all issues
+                reqProj.issues.forEach((iss) => {
+                    iss.remove();
+                })
+
                 // Delete the project
                 reqProj.remove();
 
@@ -312,9 +308,157 @@ router.delete('/projects', (req, res) => {
     }
 });
 
-// router.post('/issues', postIssue);
-// router.put('/issues/:pname/:issueNum', putIssue);
-// router.del('/issues/:pname/:issueNum', delIssue);
+router.get('/issues', (req, res) => {
+    winston.debug("Inside GET /api/issues");
+
+    if (!req.user) {
+        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
+    }
+    else if (!req.query || !req.query.pname || !req.query.inum) {
+        handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+    }
+    else {
+        // Find the project
+        var reqProj = findProject(req.user, req.query.pname);
+        if (!reqProj) {
+            sendResponse(null, HTTP.NOT_FOUND, res);
+        }
+        else {
+            // Find the issue in the project
+            var issue = findIssue(reqProj, req.query.inum);
+            if (issue) {
+                sendResponse(issue, HTTP.OK, res);
+            }
+            else {
+                sendResponse(null, HTTP.NOT_FOUND, res);
+            }
+        }
+    }
+});
+
+router.post('/issues', (req, res) => {
+    winston.debug("Inside POST /api/issues");
+
+    if (!req.user) {
+        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
+    }
+    else if (!req.body || !req.body.pname || !req.body.ititle || !req.body.idescription) {
+        handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+    }
+    else {
+        // Find the project
+        var reqProj = findProject(req.user, req.body.pname);
+        if (!reqProj) {
+            handleError(new Error("Could not find the project to make the issue"), HTTP.BAD_REQUEST, res);
+        }
+        else {
+
+            // Project found, create an issue.
+            var newIssue = new Issue({
+                title: req.body.ititle,
+                description: req.body.idescription,
+                number: reqProj._nextinum
+            });
+
+            // Save new issue
+            newIssue.save((err) => {
+                if (err) {
+                    handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
+                }
+                else {
+                    // Save the new issue to the project
+                    reqProj.issues.push(newIssue);
+                    reqProj.nextinum++;
+                    reqProj.save((err) => {
+                        if (err) {
+                            handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
+                        }
+                        else {
+                            // Send success
+                            sendResponse(newIssue, HTTP.OK, res);
+                        }
+                    });
+                }
+            });
+        }
+    }
+});
+
+router.put('/issues', (req, res) => {
+    winston.debug("Inside PUT /api/issues");
+
+    if (!req.user) {
+        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
+    }
+    else if (!req.query || !req.query.pname || !req.query.inum || !req.body) {
+        handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+    }
+    else {
+        // Find the project
+        var reqProj = findProject(req.user, req.query.pname);
+        if (!reqProj) {
+            sendResponse(null, HTTP.NOT_FOUND, res);
+        }
+        else {
+            // Find the issue in the project
+            var issue = findIssue(reqProj, req.query.inum);
+
+            // If we found the issue, update it.
+            if (!issue) {
+                sendResponse(null, HTTP.NOT_FOUND, res);
+            }
+            else {
+                // Update the issue
+                issue.title = req.body.ititle ? req.body.ititle : issue.title;
+                issue.description = req.body.idescription ? req.body.idescription : issue.description;
+                issue.state = req.body.istate ? req.body.istate : issue.state;
+                issue.asignee = req.body.iasignee ? req.body.iasignee : issue.asignee;
+
+                issue.save((err) => {
+                    if (err) {
+                        handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
+                    }
+                    else {
+                        sendResponse(issue, HTTP.OK, res);
+                    }
+                });
+            }
+        }
+    }
+});
+
+router.delete('/issues', (req, res) => {
+    winston.debug("Inside DELETE /api/issues");
+
+    if (!req.user) {
+        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
+    }
+    else if (!req.query || !req.query.pname || !req.query.inum) {
+        handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+    }
+    else {
+        // Find the project
+        var reqProj = findProject(req.user, req.query.pname);
+        if (!reqProj) {
+            sendResponse(null, HTTP.NOT_FOUND, res);
+        }
+        else {
+            // Find the issue in the project
+            var issue = findIssue(reqProj, req.query.inum);
+
+            // If we found the issue, update it.
+            if (!issue) {
+                sendResponse(null, HTTP.NOT_FOUND, res);
+            }
+            else {
+                // Delete the issue
+                issue.remove()
+
+                sendResponse(issue, HTTP.OK, res);
+            }
+        }
+    }
+});
 
 // router.get('/users/:userID', getUser);
 // router.post('/users', postUser);
@@ -324,6 +468,44 @@ router.delete('/projects', (req, res) => {
 // *****************************************************************
 // * Define helper functions
 // *****************************************************************
+
+/**
+ * This function checks both a user's projects array and colabProjects array to find
+ * the specified project.
+ * @param user The mongoose user model to be searched
+ * @param pname The name of the project
+ * @returns The requested project if found, null otherwise
+ */
+function findProject(user, pname) {
+    // Check if the user owns the project
+    var reqProj = user.projects.find((project) => {
+        return project.name === pname;
+    });
+
+    // If not found, check if it's a colab project
+    if (!reqProj) {
+        reqProj = user.colabProjects.find((project) => {
+            return project.name === pname;
+        });
+    }
+
+    return reqProj;
+}
+
+/**
+ * This function searches for an issue in a project.
+ * @param proj The mongoose project model to be searched
+ * @param inum The issue number
+ * @returns The requested issue if found, null otherwise
+ */
+function findIssue(proj, inum) {
+    // Find the issue in the project
+    var reqIssue = proj.issues.find((issue) => {
+        return issue.number == inum;
+    });
+
+    return reqIssue;
+}
 
 /**
  * This function is a helper for handling errors.
