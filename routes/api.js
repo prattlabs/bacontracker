@@ -96,7 +96,8 @@ router.post('/login', (req, res) => {
                     colabProjects: user.colabProjects
                 }
 
-                sendResponse(resData, HTTP.OK, res);
+                // sendResponse(resData, HTTP.OK, res);
+                res.redirect("/projects.html");
             })
         }
     })(req, res);

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" ng-app="bacontracker">
 
 <head>
   <meta charset="UTF-8">
@@ -8,9 +8,14 @@
   <title>Projects</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
   <link rel="stylesheet" href="../assets/css/main.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+  <script src="app.js" type="text/javascript"></script>
 </head>
 
-<body class="container">
+<body class="container" ng-controller="ProjectController">
+
+  <h1>{{projects}}!!!</h1> <!-- Just a demo to show this linking in -->
+
   <nav class="navbar navbar-light bg-faded">
     <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2" aria-controls="exCollapsingNavbar2" aria-expanded="false" aria-label="Toggle navigation"></button>
     <div class="collapse navbar-toggleable-xs">
