@@ -14,8 +14,6 @@
 
 <body class="container" ng-controller="ProjectController">
 
-  <h1>{{projects}}!!!</h1> <!-- Just a demo to show this linking in -->
-
   <nav class="navbar navbar-light bg-faded">
     <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2" aria-controls="exCollapsingNavbar2" aria-expanded="false" aria-label="Toggle navigation"></button>
     <div class="collapse navbar-toggleable-xs">
@@ -41,54 +39,14 @@
       <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
         <h3>Projects you own</h3>
       </div>
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4">
+
+      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4" ng-repeat="project in myProjects">
         <div class="card card-block">
-          <h4 class="card-title">TowneScope</h4>
-          <p class="card-text">Market Your Towne!</p>
+          <h4 class="card-title">{{project.name}}</h4>
+          <p class="card-text">{{project.description}}</p>
           <a href="issues.html"><button class="btn btn-danger" type="button" name="open">Open</button></a>
         </div>
       </div>
-
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4">
-        <div class="card card-block">
-          <h4 class="card-title">eGenuity Installer</h4>
-          <p class="card-text">Installer for eGenuity.</p>
-          <button class="btn btn-danger" type="button" name="open">Open</button>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4">
-        <div class="card card-block">
-          <h4 class="card-title">eGenuity Installer</h4>
-          <p class="card-text">Installer for eGenuity.</p>
-          <button class="btn btn-danger" type="button" name="open">Open</button>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4">
-        <div class="card card-block">
-          <h4 class="card-title">eGenuity Installer</h4>
-          <p class="card-text">Installer for eGenuity.</p>
-          <button class="btn btn-danger" type="button" name="open">Open</button>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4">
-        <div class="card card-block">
-          <h4 class="card-title">eGenuity Installer</h4>
-          <p class="card-text">Installer for eGenuity.</p>
-          <button class="btn btn-danger" type="button" name="open">Open</button>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4">
-        <div class="card card-block">
-          <h4 class="card-title">eGenuity Installer</h4>
-          <p class="card-text">Installer for eGenuity.</p>
-          <button class="btn btn-danger" type="button" name="open">Open</button>
-        </div>
-      </div>
-    </div>
 
     <div class="clearfix"></div>
     <br>
@@ -99,61 +57,14 @@
         <h3>Projects you collaborate on</h3>
       </div>
 
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4">
+      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4" ng-repeat="project in collabProjects">
         <div class="card card-block">
-          <h4 class="card-title">TowneScope</h4>
-          <p class="card-text">Market Your Towne!</p>
+          <h4 class="card-title">{{project.name}}</h4>
+          <p class="card-text">{{project.description}}</p>
           <button class="btn btn-danger" type="button" name="open">Open</button>
         </div>
       </div>
 
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4">
-        <div class="card card-block">
-          <h4 class="card-title">eGenuity Installer</h4>
-          <p class="card-text">Installer for eGenuity.</p>
-          <button class="btn btn-danger" type="button" name="open">Open</button>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4">
-        <div class="card card-block">
-          <h4 class="card-title">eGenuity Installer</h4>
-          <p class="card-text">Installer for eGenuity.</p>
-          <button class="btn btn-danger" type="button" name="open">Open</button>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4">
-        <div class="card card-block">
-          <h4 class="card-title">eGenuity Installer</h4>
-          <p class="card-text">Installer for eGenuity.</p>
-          <button class="btn btn-danger" type="button" name="open">Open</button>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4">
-        <div class="card card-block">
-          <h4 class="card-title">eGenuity Installer</h4>
-          <p class="card-text">Installer for eGenuity.</p>
-          <button class="btn btn-danger" type="button" name="open">Open</button>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4">
-        <div class="card card-block">
-          <h4 class="card-title">eGenuity Installer</h4>
-          <p class="card-text">Installer for eGenuity.</p>
-          <button class="btn btn-danger" type="button" name="open">Open</button>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4">
-        <div class="card card-block">
-          <h4 class="card-title">eGenuity Installer</h4>
-          <p class="card-text">Installer for eGenuity.</p>
-          <button class="btn btn-danger" type="button" name="open">Open</button>
-        </div>
-      </div>
     </div>
   </div>
 </body>

@@ -162,9 +162,9 @@ router.get('/projects', (req, res) => {
         handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
     }
     else if (!req.query.pname) {
-        var projects = [];
-        projects.push(req.user.projects);
-        projects.push(req.user.colabProjects);
+        var projects = {};
+        projects.myProjects = req.user.projects;
+        projects.collabProjects = req.user.colabProjects;
         sendResponse(projects, HTTP.OK, res);
     }
     else {
