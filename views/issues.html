@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="bacontracker">
 
 <head>
   <meta charset="UTF-8">
@@ -8,9 +8,11 @@
   <title>Issues</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
   <link rel="stylesheet" href="../assets/css/main.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+  <script src="app.js" type="text/javascript"></script>
 </head>
 
-<body>
+<body ng-controller="IssueController">
   <div class="container">
     <nav class="navbar navbar-light bg-faded">
       <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2" aria-controls="exCollapsingNavbar2" aria-expanded="false" aria-label="Toggle navigation"></button>
@@ -42,33 +44,9 @@
         </div>
 
         <ul class="list-group list-group-flush">
-          <li class="list-group-item list-group-item-danger">
-            <input type="checkbox">Cras justo odio
-            <a class="nav-link  pull-xs-right account-name-issue" href="#">Cameron Lengerich</a>
-          </li>
-          <li class="list-group-item list-group-item-warning">
-            <input type="checkbox">Dapibus ac facilisis in
-            <a class="nav-link list-group-item-text pull-xs-right account-name-issue" href="#">Zachary Pratt</a>
-          </li>
-
-          <li class="list-group-item">
-            <input type="checkbox">Vestibulum at eros
-            <a class="nav-link list-group-item-text pull-xs-right account-name-issue" href="#">Carter Chase</a>
-          </li>
-
-          <li class="list-group-item list-group-item-danger">
-            <input type="checkbox">Cras justo odio
-            <a class="nav-link  pull-xs-right account-name-issue" href="#">Carter Chase</a>
-          </li>
-
-          <li class="list-group-item">
-            <input type="checkbox">Cras justo odio
-            <a class="nav-link  pull-xs-right account-name-issue" href="#">Cameron Lengerich</a>
-          </li>
-
-          <li class="list-group-item list-group-item-warning">
-            <input type="checkbox">Dapibus ac facilisis in
-            <a class="nav-link list-group-item-text pull-xs-right account-name-issue" href="#">Zachary Pratt</a>
+          <li class="list-group-item" ng-repeat="issue in issues">
+            <input type="checkbox">{{issue.title}}
+            <a class="nav-link  pull-xs-right account-name-issue" href="#">{{issue.assignee}}</a>
           </li>
         </ul>
       </div>
