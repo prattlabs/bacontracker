@@ -157,12 +157,18 @@ router.get('/projects', (req, res) => {
     if (!req.user) {
         handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
     }
-    else if (!req.query || !req.query.pname) {
+    else if (!req.query) {
         handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+    }
+    else if (!req.query.pname) {
+        var projects = [];
+        projects.push(req.user.projects);
+        projects.push(req.user.colabProjects);
+        sendResponse(projects, HTTP.OK, res);
     }
     else {
         // Find the project
-        var reqProj = findProject(req.user, req.qery.pname);
+        var reqProj = findProject(req.user, req.query.pname);
 
         if (reqProj) {
             sendResponse(reqProj, HTTP.OK, res);
