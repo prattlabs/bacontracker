@@ -6,10 +6,29 @@
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Issues</title>
+  <!-- jQuery -->
+  <script
+          src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
+          integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc="
+          crossorigin="anonymous"></script>
+  <!-- Bootstrap -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
-  <link rel="stylesheet" href="../assets/css/main.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <!-- AngularJs -->
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script>
+  <!-- Our app -->
+  <link rel="stylesheet" href="../assets/css/main.css">
   <script src="app.js" type="text/javascript"></script>
+
+  <script>
+    $(document).ready(function(){
+      $('[data-toggle="popover"]').popover();
+    });
+    $("#editclear").click(function(){
+      $("#editinput").val('');
+    });
+  </script>
 </head>
 
 <body ng-controller="IssueController">
@@ -34,7 +53,7 @@
     <br>
 
     <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
-      <h2>TowneScope</h2>
+      <h2>{{project}}</h2>
     </div>
 
     <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
@@ -45,12 +64,42 @@
 
         <ul class="list-group list-group-flush">
           <li class="list-group-item" ng-repeat="issue in issues">
-            <input type="checkbox">{{issue.title}}
+            <input type="checkbox">
+            <a href="#" data-toggle="modal" data-target="#editIssue" ng-click="setIssue(issue)">{{issue.title}}</a>
             <a class="nav-link  pull-xs-right account-name-issue" href="#">{{issue.assignee}}</a>
           </li>
         </ul>
       </div>
     </div>
+
+    <!-- Modal -->
+    <div id="editIssue" class="modal fade" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">{{ issue.title }}</h4>
+          </div>
+          <div class="modal-body">
+            <span>Description: </span><input class="form-control" type="text" ng-model="issue.description" ng-change="log(issue)"/>
+            <span>Number: </span><input class="form-control" type="text" ng-model="issue.number" ng-change="log(issue)"/>
+            <span>State: </span><input class="form-control" type="text" ng-model="issue.state" ng-change="log(issue)"/>
+            <span>Assignee: </span><input class="form-control" type="text" ng-model="issue.assignee" ng-change="log(issue)"/>
+          </div>
+          <div class="modal-footer">
+
+              <button type="button" class="btn btn-info" data-dismiss="modal">Save & Close</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div>
 
   </div>
 

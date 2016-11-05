@@ -7,6 +7,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var Issue = require('../models/issue.js');
 var Project = require('../models/project.js');
 var User = require('../models/user.js');
+var path = require('path');
 
 // *****************************************************************
 // * Configure passportjs
@@ -304,8 +305,13 @@ router.get('/issues', (req, res) => {
     if (!req.user) {
         handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
     }
-    else if (!req.query || !req.query.pname || !req.query.inum) {
+    else if (!req.query || !req.query.pname) {
         handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+    }
+    else if (!req.query.inum) {
+        // Find the project
+        var project = findProject(req.user, req.query.pname);
+        sendResponse(project.issues, HTTP.OK, res);
     }
     else {
         // Find the project
