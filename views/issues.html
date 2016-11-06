@@ -8,14 +8,18 @@
   <title>Issues</title>
   <!-- jQuery -->
   <script
-          src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
-          integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc="
+          src="https://code.jquery.com/jquery-3.1.1.js"
+          integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+          crossorigin="anonymous"></script>
+  <script
+          src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"
+          integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
           crossorigin="anonymous"></script>
   <!-- Bootstrap -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <!-- AngularJs -->
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script>
   <!-- Our app -->
   <link rel="stylesheet" href="../assets/css/main.css">
@@ -28,6 +32,10 @@
     $("#editclear").click(function(){
       $("#editinput").val('');
     });
+    $( function() {
+      $( ".sortable" ).sortable();
+      $( ".sortable" ).disableSelection();
+    } );
   </script>
 </head>
 
@@ -62,7 +70,7 @@
           <input type="text" class="form-control" placeholder="Filter: issue, author">
         </div>
 
-        <ul class="list-group list-group-flush">
+        <ul class="sortable list-group list-group-flush">
           <li class="list-group-item" ng-repeat="issue in issues">
             <input type="checkbox">
             <a href="#" data-toggle="modal" data-target="#editIssue" ng-click="setIssue(issue)">{{issue.title}}</a>
