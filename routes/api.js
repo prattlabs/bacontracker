@@ -13,59 +13,69 @@ var path = require('path');
 // * Configure passportjs
 // *****************************************************************
 
-// Setup the passport authentication strategy and session serialization
-passport.use(new LocalStrategy(
-    {
-        usernameField: 'form-username',
-        passwordField: 'form-password'
-    },
-    (username, password, done) => {
-        User.find({ username: username }, (err, users) => {
-            if (err) {
-                done(err, false);
-            }
-            else if (!users || users.length !== 1 || !users[0].authenticate(password)) {
-                done(null, false);
-            }
-            else {
-                // Populate the projects
-                var usr = users[0];
-                User.deepPopulate(usr, "projects.issues colabProjects.issues", () => {
-                    if (err) {
-                        done(err, false);
-                    }
-                    else {
-                        done(null, usr);
-                    }
-                });
-            }
+router.use((req, res, next) => {
+    console.log("Faking user as 'user1'");
+    User.find({ username: "user1" }, (err, users) => {
+        User.deepPopulate(users[0], "projects.issues colabProjects.issues", () => {
+            req.user = users[0];
+            next();
         });
-    })
-);
-
-passport.serializeUser((user, done) => {
-    done(null, user._id);
-});
-
-passport.deserializeUser((id, done) => {
-    User.find({ _id: id }, (err, users) => {
-        if (err || users.length !== 1) {
-            return done(err, false);
-        }
-        else {
-            // Populate the projects
-            var usr = users[0];
-            User.deepPopulate(usr, "projects.issues colabProjects.issues", () => {
-                if (err) {
-                    done(err, false);
-                }
-                else {
-                    done(null, usr);
-                }
-            });
-        }
     });
 });
+
+// Setup the passport authentication strategy and session serialization
+// passport.use(new LocalStrategy(
+//     {
+//         usernameField: 'form-username',
+//         passwordField: 'form-password'
+//     },
+//     (username, password, done) => {
+//         User.find({ username: username }, (err, users) => {
+//             if (err) {
+//                 done(err, false);
+//             }
+//             else if (!users || users.length !== 1 || !users[0].authenticate(password)) {
+//                 done(null, false);
+//             }
+//             else {
+//                 // Populate the projects
+//                 var usr = users[0];
+//                 User.deepPopulate(usr, "projects.issues colabProjects.issues", () => {
+//                     if (err) {
+//                         done(err, false);
+//                     }
+//                     else {
+//                         done(null, usr);
+//                     }
+//                 });
+//             }
+//         });
+//     })
+// );
+
+// passport.serializeUser((user, done) => {
+//     done(null, user._id);
+// });
+
+// passport.deserializeUser((id, done) => {
+//     User.find({ _id: id }, (err, users) => {
+//         if (err || users.length !== 1) {
+//             return done(err, false);
+//         }
+//         else {
+//             // Populate the projects
+//             var usr = users[0];
+//             User.deepPopulate(usr, "projects.issues colabProjects.issues", () => {
+//                 if (err) {
+//                     done(err, false);
+//                 }
+//                 else {
+//                     done(null, usr);
+//                 }
+//             });
+//         }
+//     });
+// });
 
 // *****************************************************************
 // * Open the routes
