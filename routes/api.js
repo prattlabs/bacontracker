@@ -13,6 +13,7 @@ var path = require('path');
 // * Configure passportjs
 // *****************************************************************
 
+// Remove this middleware to start enforcing login requirements
 router.use((req, res, next) => {
     console.log("Faking user as 'user1'");
     User.find({ username: "user1" }, (err, users) => {
@@ -24,58 +25,58 @@ router.use((req, res, next) => {
 });
 
 // Setup the passport authentication strategy and session serialization
-// passport.use(new LocalStrategy(
-//     {
-//         usernameField: 'form-username',
-//         passwordField: 'form-password'
-//     },
-//     (username, password, done) => {
-//         User.find({ username: username }, (err, users) => {
-//             if (err) {
-//                 done(err, false);
-//             }
-//             else if (!users || users.length !== 1 || !users[0].authenticate(password)) {
-//                 done(null, false);
-//             }
-//             else {
-//                 // Populate the projects
-//                 var usr = users[0];
-//                 User.deepPopulate(usr, "projects.issues colabProjects.issues", () => {
-//                     if (err) {
-//                         done(err, false);
-//                     }
-//                     else {
-//                         done(null, usr);
-//                     }
-//                 });
-//             }
-//         });
-//     })
-// );
+passport.use(new LocalStrategy(
+    {
+        usernameField: 'form-username',
+        passwordField: 'form-password'
+    },
+    (username, password, done) => {
+        User.find({ username: username }, (err, users) => {
+            if (err) {
+                done(err, false);
+            }
+            else if (!users || users.length !== 1 || !users[0].authenticate(password)) {
+                done(null, false);
+            }
+            else {
+                // Populate the projects
+                var usr = users[0];
+                User.deepPopulate(usr, "projects.issues colabProjects.issues", () => {
+                    if (err) {
+                        done(err, false);
+                    }
+                    else {
+                        done(null, usr);
+                    }
+                });
+            }
+        });
+    })
+);
 
-// passport.serializeUser((user, done) => {
-//     done(null, user._id);
-// });
+passport.serializeUser((user, done) => {
+    done(null, user._id);
+});
 
-// passport.deserializeUser((id, done) => {
-//     User.find({ _id: id }, (err, users) => {
-//         if (err || users.length !== 1) {
-//             return done(err, false);
-//         }
-//         else {
-//             // Populate the projects
-//             var usr = users[0];
-//             User.deepPopulate(usr, "projects.issues colabProjects.issues", () => {
-//                 if (err) {
-//                     done(err, false);
-//                 }
-//                 else {
-//                     done(null, usr);
-//                 }
-//             });
-//         }
-//     });
-// });
+passport.deserializeUser((id, done) => {
+    User.find({ _id: id }, (err, users) => {
+        if (err || users.length !== 1) {
+            return done(err, false);
+        }
+        else {
+            // Populate the projects
+            var usr = users[0];
+            User.deepPopulate(usr, "projects.issues colabProjects.issues", () => {
+                if (err) {
+                    done(err, false);
+                }
+                else {
+                    done(null, usr);
+                }
+            });
+        }
+    });
+});
 
 // *****************************************************************
 // * Open the routes
@@ -151,9 +152,7 @@ router.post('/signup', (req, res) => {
 
                 winston.debug(user.username, "has just logged in.");
                 var resData = {
-                    username: user.username,
-                    projects: user.projects,
-                    colabProjects: user.colabProjects
+                    username: user.username
                 };
 
                 // sendResponse(resData, HTTP.OK, res); TODO: Make the front end redirect
@@ -474,9 +473,7 @@ router.get('/currentUser', (req, res) => {
     }
     else {
         var resData = {
-            username: req.user.username,
-            projects: req.user.projects,
-            colabProjects: req.user.colabProjects
+            username: req.user.username
         }
 
         sendResponse(resData, HTTP.OK, res)
