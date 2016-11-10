@@ -103,9 +103,7 @@ router.post('/login', (req, res) => {
                 winston.debug(user.username, "has just logged in.");
 
                 var resData = {
-                    username: user.username,
-                    projects: user.projects,
-                    colabProjects: user.colabProjects
+                    username: user.username
                 }
 
                 // sendResponse(resData, HTTP.OK, res);
