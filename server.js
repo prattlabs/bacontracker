@@ -6,6 +6,7 @@ var session = require('express-session');
 var passport = require('passport');
 var mongoose = require('mongoose');
 var winston = require('winston');
+var path = require('path');
 
 // Overwrite mongoose promise library
 mongoose.Promise = global.Promise;
@@ -38,12 +39,13 @@ app.use('/api', api);
 
 // Redirect root to the login page TODO: Determine which page to show.
 app.get('/', function (req, res) {
-    if (req.cookies["connect.sid"]) {
-        res.redirect("/login.html");
-    }
-    else {
-        res.redirect("/signup.html");
-    }
+    res.sendFile(path.join(__dirname, 'views', 'index.html'))
+    // if (req.cookies["connect.sid"]) {
+    //     res.redirect("/login.html");
+    // }
+    // else {
+    //     res.redirect("/signup.html");
+    // }
 })
 
 // Serve the html and static content

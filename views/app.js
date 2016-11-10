@@ -1,6 +1,28 @@
-var app = angular.module('bacontracker', []);
+var app = angular.module('bacontracker', ['ngRoute']);
 
-app.controller('ProjectController', ['$scope', '$http', function($scope, $http) {
+app.config(function($routeProvider, $locationProvider) {
+    $routeProvider
+        .when("/", {
+            templateUrl : "projects.html",
+            controller : 'ProjectController'
+        })
+        .when("/projects", {
+            templateUrl : "projects.html",
+            controller : 'ProjectController'
+        })
+        .when("/issues", {
+            templateUrl : "issues.html",
+            controller: "IssueController"
+        }).otherwise({
+            templateUrl: "projects.html",
+            controller : 'ProjectController'
+        });
+        // use the HTML5 History API
+        $locationProvider.html5Mode(true);
+    });
+
+app.controller('ProjectController', ['$scope','$http', function($scope,$http) {
+
     $http.get("/api/projects")
         .then(function success(response) {
             $scope.myProjects = response.data.myProjects;
