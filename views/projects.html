@@ -40,7 +40,7 @@
         <div class="card card-block">
           <h4 class="card-title">{{project.name}}</h4>
           <p class="card-text">{{project.description}}</p>
-          <a href="/issues"><button class="btn btn-danger" type="button" name="open">Open</button></a>
+          <button class="btn btn-danger" type="button" name="open" ng-click="openPage(project, '/issues')">Open</button>
         </div>
       </div>
     </div>
@@ -58,7 +58,7 @@
         <div class="card card-block">
           <h4 class="card-title">{{project.name}}</h4>
           <p class="card-text">{{project.description}}</p>
-          <button class="btn btn-danger" type="button" name="open">Open</button>
+          <button class="btn btn-danger" type="button" name="open" ng-click="openPage(project, '/issues')">Open</button>
         </div>
       </div>
     </div>

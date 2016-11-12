@@ -37,7 +37,7 @@ app.use(passport.session());
 // Forward all API calls
 app.use('/api', api);
 
-// Redirect root to the login page TODO: Determine which page to show.
+// Redirect root to the login page
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, 'views', 'index.html'))
     // if (req.cookies["connect.sid"]) {
@@ -46,7 +46,7 @@ app.get('/', function (req, res) {
     // else {
     //     res.redirect("/signup.html");
     // }
-})
+});
 
 // Serve the html and static content
 app.use('/', express.static(__dirname + '/views'));
