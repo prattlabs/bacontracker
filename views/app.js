@@ -13,7 +13,8 @@ app.config(function($routeProvider, $locationProvider) {
         .when("/issues", {
             templateUrl : "issues.html",
             controller: "IssueController"
-        }).otherwise({
+        })
+        .otherwise({
             templateUrl: "projects.html",
             controller : 'ProjectController'
         });
@@ -47,7 +48,7 @@ app.controller('ProjectController', ['$scope','$http', '$location', 'ProjectServ
 
     $scope.openPage = function (project, page) {
         ProjectService.setProject(project);
-        $log.debug();
+        // Go to "page" screen
         $location.path(page);
     }
 }]);
@@ -60,8 +61,6 @@ app.controller('IssueController', ['$scope', '$http', '$log', 'ProjectService',
 
     $scope.project = ProjectService.getProject();
 
-    $scope.log("/api/issues?pname=" + $scope.project.name);
-
     $http.get("/api/issues?pname=" + $scope.project.name)
         .then(function success(response) {
             $scope.issues = response.data;
@@ -69,7 +68,28 @@ app.controller('IssueController', ['$scope', '$http', '$log', 'ProjectService',
             $scope.issues = "error: " + response;
         }
     );
+
     $scope.setIssue = function(issue) {
         $scope.issue = issue;
+    };
+
+    $scope.saveIssue = function(issue) {
+        var url = "/api/issues";
+        url += "?pname=" + $scope.project.name;
+        url += "&inum=" + issue.number;
+        url += "&ititle=" + issue.title;
+        url += "&idescription=" + issue.description;
+        url += "&istate=" + issue.state;
+        url += "&iassignee=" + issue.assignee;
+
+        $http.put(url)
+            .then(function success(response) {
+                $scope.response = response.data;
+                $scope.log($scope.response);
+            }, function error(response) {
+                $scope.response = "error: " + response;
+            }
+        );
     }
+
 }]);

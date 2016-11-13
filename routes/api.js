@@ -411,11 +411,20 @@ router.put('/issues', (req, res) => {
                 sendResponse(null, HTTP.NOT_FOUND, res);
             }
             else {
+                winston.debug(req.query)
                 // Update the issue
-                issue.title = req.body.ititle ? req.body.ititle : issue.title;
-                issue.description = req.body.idescription ? req.body.idescription : issue.description;
-                issue.state = req.body.istate ? req.body.istate : issue.state;
-                issue.assignee = req.body.iassignee ? req.body.iassignee : issue.assignee;
+                if (!issue.title || issue.title != req.query.ititle) {
+                    issue.title = req.query.ititle;
+                }
+                if (!issue.description || issue.description != req.query.idescription) {
+                    issue.description = req.query.idescription;
+                }
+                if (!issue.state || issue.state != req.query.istate) {
+                    issue.state = req.query.istate;
+                }
+                if (!issue.assignee || issue.assignee != req.query.iassignee) {
+                    issue.assignee = req.query.iassignee;
+                }
 
                 issue.save((err) => {
                     if (err) {
