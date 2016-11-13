@@ -40,33 +40,41 @@
         <h3>Projects you own</h3>
       </div>
 
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4" ng-repeat="project in myProjects">
-        <div class="card card-block">
-          <h4 class="card-title">{{project.name}}</h4>
-          <p class="card-text">{{project.description}}</p>
-          <a href="issues.html"><button class="btn btn-danger" type="button" name="open">Open</button></a>
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4" ng-repeat="project in myProjects">
+        <div class="card">
+          <div class="card-block card-block-info">
+            <h4 class="card-title">{{project.name}}</h4>
+            <p class="card-text">{{project.description}}</p>
+          </div>
+          <div class="card-block card-block-button">
+            <a href="issues.html" class="btn btn-danger card-link" name="open">Open</a>
+          </div>
         </div>
       </div>
 
-    <div class="clearfix"></div>
-    <br>
-    <br>
+      <br>
+      <br>
 
-    <div id="projectsCollaborated">
-      <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
-        <h3>Projects you collaborate on</h3>
-      </div>
-
-      <div class="col-sm-6 col-xs-12 col-md-4 col-lg-4" ng-repeat="project in collabProjects">
-        <div class="card card-block">
-          <h4 class="card-title">{{project.name}}</h4>
-          <p class="card-text">{{project.description}}</p>
-          <button class="btn btn-danger" type="button" name="open">Open</button>
+      <div id="projectsCollaborated">
+        <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
+          <h3>Projects you collaborate on</h3>
         </div>
-      </div>
 
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4" ng-repeat="project in collabProjects">
+          <div class="card">
+            <div class="card-block card-block-info">
+              <h4 class="card-title">{{project.name}}</h4>
+              <p class="card-text">{{project.description}}</p>
+            </div>
+            <div class="card-block card-block-button">
+              <a href="issues.html" class="btn btn-danger card-link" name="open">Open</a>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+
+      </div>
     </div>
-  </div>
 </body>
 
 </html>

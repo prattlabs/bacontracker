@@ -1,11 +1,15 @@
 @import url('https://fonts.googleapis.com/css?family=Lobster');
 
 body {
-    padding: 1em;
+    padding-top: 1em;
     color: #fff;
     background-image: url('../img/backgrounds/table.jpg');
     background-size: cover;
     background-attachment: fixed;
+}
+
+.clearfix {
+  overflow: auto;
 }
 
 .btn-danger {
@@ -25,8 +29,22 @@ body {
   opacity: 0.96;
 }
 
+.card-block-info {
+  position: relative;
+}
+
+.card-block-button {
+  position: relative;
+  bottom: 0px;
+  right: 0px;
+}
+
+.card {
+  min-height: 200px;
+}
+
 .projectsOwned {
-  padding-bottom: 9em;
+  /*padding-bottom: 9em;*/
 }
 
 #logo {
