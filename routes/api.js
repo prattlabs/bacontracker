@@ -230,6 +230,7 @@ router.post('/projects', (req, res) => {
 
 router.put('/projects', (req, res) => {
     winston.debug("Inside PUT /api/projects");
+        console.log(req.body)
 
     if (!req.user) {
         handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
@@ -247,8 +248,9 @@ router.put('/projects', (req, res) => {
         }
         else {
 
-            reqProj.name = req.body.pname ? req.body.pname : proj.name;
-            reqProj.description = req.body.pdescription ? req.body.pdescription : proj.description;
+            reqProj.name = req.body.pname ? req.body.pname : reqProj.name;
+            reqProj.description = req.body.pdescription ? req.body.pdescription : reqProj.description;
+            reqProj.issueOrder = req.body.issueOrder ? req.body.issueOrder : reqProj.issueOrder;
 
             reqProj.save((err) => {
                 if (err) {
