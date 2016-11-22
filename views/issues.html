@@ -7,25 +7,41 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Issues</title>
   <script>
-    $(document).ready(function(){
+  $( function() {
+    $( ".column" ).sortable({
+      connectWith: ".column",
+      handle: ".portlet-header",
+      cancel: ".portlet-toggle",
+      placeholder: "portlet-placeholder ui-corner-all",
+      update: function(event, ui) {
+          var data = $( this ).sortable('serialize')
+          console.log(data);
+          // $.ajax({
+          //   data: data,
+          //   type: 'PUT',
+          //   url: 'api/projects?pname=' + $('#pname').text()
+          // });
+        }
+    });
+ 
+    $( ".portlet" )
+      .addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" )
+      .find( ".portlet-header" )
+        .addClass( "ui-widget-header ui-corner-all" )
+        .prepend( "<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
+ 
+    $( ".portlet-toggle" ).on( "click", function() {
+      var icon = $( this );
+      icon.toggleClass( "ui-icon-minusthick ui-icon-plusthick" );
+      icon.closest( ".portlet" ).find( ".portlet-content" ).toggle();
+    });
+  } );
+      $(document).ready(function(){
       $('[data-toggle="popover"]').popover();
     });
     $("#editclear").click(function(){
       $("#editinput").val('');
     });
-    $( function() {
-      $( ".sortable" ).sortable({
-        update: function(event, ui) {
-          var data = $( this ).sortable('serialize')
-          
-          $.ajax({
-            data: data,
-            type: 'PUT',
-            url: 'api/projects?pname=' + $('#pname').text()
-          });
-        }
-      }).disableSelection();
-    } );
   </script>
 </head>
 
@@ -55,18 +71,31 @@
     </div>
 
     <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
-      <div class="card card-block">
+      <div class="card card-block portlet-block">
         <div class="form-group">
           <input type="text" class="form-control" ng-model="filter" placeholder="Filter: issue, author">
         </div>
 
-        <ul class="sortable list-group list-group-flush">
-          <li class="list-group-item" id="issueOrder_{{issue._id}}" ng-repeat="issue in issues | filter:filter">
-            <input type="checkbox">
-            <a href="#" data-toggle="modal" data-target="#editIssue" ng-click="setIssue(issue)">{{issue.title}}</a>
-            <a class="nav-link  pull-xs-right account-name-issue" href="#">{{issue.assignee}}</a>
-          </li>
-        </ul>
+        <div class="column">Open
+          <div class="portlet card" id="issueOrder_{{issue._id}}" ng-repeat="issue in issues | filter:filter">
+            <div class="portlet-header">
+              <a href="#" data-toggle="modal" data-target="#editIssue" ng-click="setIssue(issue)">{{issue.title}}</a>
+            </div>
+            <div class="portlet-content">
+              <!--<a class="portlet-content" href="#">{{issue.assignee}}</a>-->
+              <p class="portlet-content">{{issue.description}}</p>
+            </div>
+          </div>
+        
+        </div>
+        
+        <div class="column">In Progress
+        
+        </div>
+        
+        <div class="column">Closed
+        
+        </div>
       </div>
     </div>
 
