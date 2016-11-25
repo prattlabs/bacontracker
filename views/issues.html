@@ -71,31 +71,25 @@
     </div>
 
     <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
+      
+      <!-- Issue Section -->
       <div class="card card-block portlet-block">
+
+        <!-- Search Box -->
         <div class="form-group">
           <input type="text" class="form-control" ng-model="filter" placeholder="Filter: issue, author">
         </div>
 
-        <div class="column">Open
-          <div class="portlet card" id="issueOrder_{{issue._id}}" ng-repeat="issue in issues | filter:filter">
+        <!-- Issues -->
+        <div class="column" ng-repeat="state in ['Open', 'In Progress', 'Closed']">{{state}}
+          <div class="portlet card" id="issueOrder_{{issue._id}}" ng-repeat="issue in issues | filter:filter | filter:{state:$index}">
             <div class="portlet-header">
               <a href="#" data-toggle="modal" data-target="#editIssue" ng-click="setIssue(issue)">{{issue.title}}</a>
             </div>
             <div class="portlet-content">
-              <!--<a class="portlet-content" href="#">{{issue.assignee}}</a>-->
               <p class="portlet-content">{{issue.description}}</p>
             </div>
           </div>
-        
-        </div>
-        
-        <div class="column">In Progress
-        
-        </div>
-        
-        <div class="column">Closed
-        
-        </div>
       </div>
     </div>
 
