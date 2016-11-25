@@ -7,20 +7,20 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Issues</title>
   <script>
-  $( function() {
+  $(function() {
     $( ".column" ).sortable({
       connectWith: ".column",
       handle: ".portlet-header",
       cancel: ".portlet-toggle",
       placeholder: "portlet-placeholder ui-corner-all",
       update: function(event, ui) {
-          var data = $( this ).sortable('serialize')
-          console.log(data);
-          // $.ajax({
-          //   data: data,
-          //   type: 'PUT',
-          //   url: 'api/projects?pname=' + $('#pname').text()
-          // });
+          var data = $( this ).sortable('serialize');
+          data = "state=" + $( this ).attr('id') + "&" + data;
+          $.ajax({
+            data: data,
+            type: 'PUT',
+            url: 'api/issues/updateOrder?pname=' + $('#pname').text()
+          });
         }
     });
  
@@ -35,13 +35,13 @@
       icon.toggleClass( "ui-icon-minusthick ui-icon-plusthick" );
       icon.closest( ".portlet" ).find( ".portlet-content" ).toggle();
     });
-  } );
-      $(document).ready(function(){
+  });
+  $(document).ready(function(){
       $('[data-toggle="popover"]').popover();
-    });
-    $("#editclear").click(function(){
-      $("#editinput").val('');
-    });
+  });
+  $("#editclear").click(function(){
+    $("#editinput").val('');
+  });
   </script>
 </head>
 
@@ -81,7 +81,7 @@
         </div>
 
         <!-- Issues -->
-        <div class="column" ng-repeat="state in ['Open', 'In Progress', 'Closed']">{{state}}
+        <div class="column" id="issueState_{{$index}}" ng-repeat="state in ['Open', 'In Progress', 'Closed']">{{state}}
           <div class="portlet card" id="issueOrder_{{issue._id}}" ng-repeat="issue in issues | filter:filter | filter:{state:$index}">
             <div class="portlet-header">
               <a href="#" data-toggle="modal" data-target="#editIssue" ng-click="setIssue(issue)">{{issue.title}}</a>

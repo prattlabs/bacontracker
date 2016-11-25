@@ -249,23 +249,6 @@ router.put('/projects', (req, res) => {
 
             reqProj.name = req.body.pname ? req.body.pname : reqProj.name;
             reqProj.description = req.body.pdescription ? req.body.pdescription : reqProj.description;
-            
-            // Update the issue order if necessary
-            if(req.body.issueOrder){
-                var tmpArr = reqProj.issues;
-                reqProj.issues = [];
-                for(var cnt1 = 0; cnt1 < req.body.issueOrder.length; cnt1++){
-                    for(var cnt2 = 0; cnt2 < tmpArr.length; cnt2++){
-                        if(req.body.issueOrder[cnt1] == tmpArr[cnt2]._id){
-                            reqProj.issues.push(tmpArr[cnt2]);
-                            tmpArr.slice(cnt2, 1);
-                        }
-                    }
-                }
-
-                // Add any remaining issues
-                reqProj.issues.concat(tmpArr);
-            }
 
             reqProj.save((err) => {
                 if (err) {
@@ -485,6 +468,74 @@ router.delete('/issues', (req, res) => {
 
                 sendResponse(issue, HTTP.OK, res);
             }
+        }
+    }
+});
+
+router.put('/issues/updateOrder', (req, res) => {
+    winston.debug("Inside put /api/issues/updateOrder");
+
+    if (!req.user) {
+        handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
+    }
+    else if (!req.query || !req.query.pname || !req.body || !req.body.state) {
+        handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+    }
+    else {
+        // Find the project
+        var reqProj = findProject(req.user, req.query.pname);
+        if (!reqProj) {
+            sendResponse(null, HTTP.NOT_FOUND, res);
+        }
+        else if(!req.body.issueOrder){
+            winston.debug("No order to update");
+            sendResponse(null, HTTP.OK, res);
+        }
+        else {
+            // Convert to a real state
+            var state;
+            switch (req.body.state) {
+                case "issueState_0":
+                    state = 0;
+                    break;
+                case "issueState_1":
+                    state = 1;
+                    break;
+                case "issueState_2":
+                    state = 2;
+                    break;
+            }
+
+            var oldOrder = reqProj.issues;
+            var newOrder = [];
+            for (var cnt1 = 0; cnt1 < req.body.issueOrder.length; cnt1++) {
+                for (var cnt2 = 0; cnt2 < oldOrder.length; cnt2++) {
+                    if (req.body.issueOrder[cnt1] == oldOrder[cnt2]._id) {
+                        // Update the issue to have the new state
+                        oldOrder[cnt2].state = state;
+                        oldOrder[cnt2].save();
+
+                        // Save the order
+                        newOrder.push(oldOrder[cnt2]);
+                        oldOrder.splice(cnt2, 1);
+                        break;
+                    }
+                }
+            }
+
+            // Add any remaining issues
+            reqProj.issues = newOrder.concat(oldOrder);
+            
+            // Save the project
+            reqProj.save((err) => {
+                if (err) {
+                    handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
+                }
+                else {
+                    // Send success
+                    sendResponse(reqProj, HTTP.OK, res);
+                }
+            });
         }
     }
 });
