@@ -51,6 +51,9 @@ app.get('/', function (req, res) {
 // Serve the html and static content
 app.use('/', express.static(__dirname + '/views'));
 app.use('/assets', express.static(__dirname + '/assets'));
+app.get('*', function(req, res) {
+    res.redirect("/");
+});
 
 // Connect to the database
 mongoose.connect('mongodb://app:bacon@ds023435.mlab.com:23435/bacon-tracker', function (err) {
