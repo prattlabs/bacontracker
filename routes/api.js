@@ -177,7 +177,7 @@ router.get('/projects', (req, res) => {
     }
     else {
         // Find the project
-        var reqProj = findProject(req.user, req.query.pname);
+        var reqProj = findAssociatedProject(req.user, req.query.pname);
 
         if (reqProj) {
             sendResponse(reqProj, HTTP.OK, res);
@@ -239,9 +239,7 @@ router.put('/projects', (req, res) => {
     }
     else {
         // Check if the project is on the user's object
-        var reqProj = req.user.projects.find((project) => {
-            return project.name === req.query.pname
-        });
+        var reqProj = findOwnedProject(user, req.query.pname)
         if (!reqProj) {
             handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
         }
@@ -273,9 +271,7 @@ router.delete('/projects', (req, res) => {
     }
     else {
         // Check if the project is on the user's object
-        var reqProj = req.user.projects.find((project) => {
-            return project.name === req.query.pname
-        });
+        var reqProj = findOwnedProject(user, req.query.pname)
         if (!reqProj) {
             handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
         }
@@ -317,12 +313,12 @@ router.get('/issues', (req, res) => {
     }
     else if (!req.query.inum) {
         // Find the project
-        var project = findProject(req.user, req.query.pname);
+        var project = findAssociatedProject(req.user, req.query.pname);
         sendResponse(project.issues, HTTP.OK, res);
     }
     else {
         // Find the project
-        var reqProj = findProject(req.user, req.query.pname);
+        var reqProj = findAssociatedProject(req.user, req.query.pname);
         if (!reqProj) {
             sendResponse(null, HTTP.NOT_FOUND, res);
         }
@@ -350,7 +346,7 @@ router.post('/issues', (req, res) => {
     }
     else {
         // Find the project
-        var reqProj = findProject(req.user, req.body.pname);
+        var reqProj = findAssociatedProject(req.user, req.body.pname);
         if (!reqProj) {
             handleError(new Error("Could not find the project to make the issue"), HTTP.BAD_REQUEST, res);
         }
@@ -398,7 +394,7 @@ router.put('/issues', (req, res) => {
     }
     else {
         // Find the project
-        var reqProj = findProject(req.user, req.query.pname);
+        var reqProj = findAssociatedProject(req.user, req.query.pname);
         if (!reqProj) {
             sendResponse(null, HTTP.NOT_FOUND, res);
         }
@@ -450,7 +446,7 @@ router.delete('/issues', (req, res) => {
     }
     else {
         // Find the project
-        var reqProj = findProject(req.user, req.query.pname);
+        var reqProj = findAssociatedProject(req.user, req.query.pname);
         if (!reqProj) {
             sendResponse(null, HTTP.NOT_FOUND, res);
         }
@@ -483,7 +479,7 @@ router.put('/issues/updateOrder', (req, res) => {
     }
     else {
         // Find the project
-        var reqProj = findProject(req.user, req.query.pname);
+        var reqProj = findAssociatedProject(req.user, req.query.pname);
         if (!reqProj) {
             sendResponse(null, HTTP.NOT_FOUND, res);
         }
@@ -506,6 +502,7 @@ router.put('/issues/updateOrder', (req, res) => {
                     break;
             }
 
+            // Generate the new order
             var oldOrder = reqProj.issues;
             var newOrder = [];
             for (var cnt1 = 0; cnt1 < req.body.issueOrder.length; cnt1++) {
@@ -584,17 +581,29 @@ router.put('/currentUser', (req, res) => {
 // *****************************************************************
 
 /**
+ * This function checks only a user's projects array to find the specified project.
+ * @param user The mongoose user model to be searched
+ * @param pname The name of the project
+ * @returns The requested project if found, null otherwise
+ */
+function findOwnedProject(user, pname) {
+    // Check if the user owns the project
+    var reqProj = user.projects.find((project) => {
+        return project.name === pname;
+    });
+    return reqProj;
+}
+
+/**
  * This function checks both a user's projects array and colabProjects array to find
  * the specified project.
  * @param user The mongoose user model to be searched
  * @param pname The name of the project
  * @returns The requested project if found, null otherwise
  */
-function findProject(user, pname) {
+function findAssociatedProject(user, pname) {
     // Check if the user owns the project
-    var reqProj = user.projects.find((project) => {
-        return project.name === pname;
-    });
+    var reqProj = findOwnedProject(user, pname);
 
     // If not found, check if it's a colab project
     if (!reqProj) {
