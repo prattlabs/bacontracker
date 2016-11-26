@@ -7,41 +7,41 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Issues</title>
   <script>
-  $(function() {
-    $( ".column" ).sortable({
-      connectWith: ".column",
-      handle: ".portlet-header",
-      cancel: ".portlet-toggle",
-      placeholder: "portlet-placeholder ui-corner-all",
-      update: function(event, ui) {
-          var data = $( this ).sortable('serialize');
-          data = "state=" + $( this ).attr('id') + "&" + data;
+    $(function() {
+      $(".column").sortable({
+        connectWith: ".column",
+        handle: ".portlet-header",
+        cancel: ".portlet-toggle",
+        placeholder: "portlet-placeholder ui-corner-all",
+        update: function(event, ui) {
+          var data = $(this).sortable('serialize');
+          data = "state=" + $(this).attr('id') + "&" + data;
           $.ajax({
             data: data,
             type: 'PUT',
             url: 'api/issues/updateOrder?pname=' + $('#pname').text()
           });
         }
+      });
+
+      $(".portlet")
+        .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
+        .find(".portlet-header")
+        .addClass("ui-widget-header ui-corner-all")
+        .prepend("<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
+
+      $(".portlet-toggle").on("click", function() {
+        var icon = $(this);
+        icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
+        icon.closest(".portlet").find(".portlet-content").toggle();
+      });
     });
- 
-    $( ".portlet" )
-      .addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" )
-      .find( ".portlet-header" )
-        .addClass( "ui-widget-header ui-corner-all" )
-        .prepend( "<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
- 
-    $( ".portlet-toggle" ).on( "click", function() {
-      var icon = $( this );
-      icon.toggleClass( "ui-icon-minusthick ui-icon-plusthick" );
-      icon.closest( ".portlet" ).find( ".portlet-content" ).toggle();
-    });
-  });
-  $(document).ready(function(){
+    $(document).ready(function() {
       $('[data-toggle="popover"]').popover();
-  });
-  $("#editclear").click(function(){
-    $("#editinput").val('');
-  });
+    });
+    $("#editclear").click(function() {
+      $("#editinput").val('');
+    });
   </script>
 </head>
 
@@ -71,7 +71,7 @@
     </div>
 
     <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
-      
+
       <!-- Issue Section -->
       <div class="card card-block portlet-block">
 
@@ -81,51 +81,53 @@
         </div>
 
         <!-- Issues -->
-        <div class="column" id="issueState_{{$index}}" ng-repeat="state in ['Open', 'In Progress', 'Closed']">{{state}}
-          <div class="portlet card" id="issueOrder_{{issue._id}}" ng-repeat="issue in issues | filter:filter | filter:{state:$index}">
-            <div class="portlet-header">
-              <a href="#" data-toggle="modal" data-target="#editIssue" ng-click="setIssue(issue)">{{issue.title}}</a>
+        <div class="column" id="issueState_{{$index}}" ng-repeat="state in ['Open', 'In Progress', 'Closed']"><h3>{{state}}</h3>
+          <div class="portlet card card-danger" id="issueOrder_{{issue._id}}" ng-repeat="issue in issues | filter:filter | filter:{state:$index}">
+            <div class="portlet-header card-header">
+              <a href="#" data-toggle="modal" data-target="#editIssue" ng-click="setIssue(issue)"><b>{{issue.title}}</b></a>
             </div>
-            <div class="portlet-content">
-              <p class="portlet-content">{{issue.description}}</p>
+            <div class="portlet-content card-text">
+              <p>{{issue.description}}</p>
+              <p class="assignee blockquote"><a href="#">{{issue.assignee}}</a></p>
             </div>
           </div>
+        </div>
       </div>
-    </div>
 
-    <!-- Modal -->
-    <div id="editIssue" class="modal fade" role="dialog">
-      <div class="modal-dialog modal-lg">
-        <!-- Modal content-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">{{ issue.title }}</h4>
-          </div>
-          <div class="modal-body">
-            <span>Description: </span><input class="form-control" type="text" ng-model="issue.description" ng-change="log(issue)"/>
-            <span>Number: </span><input class="form-control" type="text" ng-readonly="true" ng-model="issue.number" ng-change="log(issue)"/>
-            <span>State: </span><input class="form-control" type="text" ng-model="issue.state" ng-change="log(issue)"/>
-            <span>Assignee: </span><input class="form-control" type="text" ng-model="issue.assignee" ng-change="log(issue)"/>
-          </div>
-          <div class="modal-footer">
+      <!-- Modal -->
+      <div id="editIssue" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">{{ issue.title }}</h4>
+            </div>
+            <div class="modal-body">
+              <span>Description: </span><input class="form-control" type="text" ng-model="issue.description" ng-change="log(issue)" />
+              <span>Number: </span><input class="form-control" type="text" ng-readonly="true" ng-model="issue.number" ng-change="log(issue)" />
+              <span>State: </span><input class="form-control" type="text" ng-model="issue.state" ng-change="log(issue)" />
+              <span>Assignee: </span><input class="form-control" type="text" ng-model="issue.assignee" ng-change="log(issue)" />
+            </div>
+            <div class="modal-footer">
 
               <button type="button" class="btn btn-info" data-dismiss="modal" ng-click="saveIssue(issue)">Save & Close</button>
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
+            </div>
           </div>
         </div>
       </div>
+
     </div>
 
-  </div>
+    <div>
 
-  <div>
-
-  </div>
+    </div>
 
 </body>
 <footer>
   <script src="app.js" type="text/javascript"></script>
 </footer>
+
 </html>

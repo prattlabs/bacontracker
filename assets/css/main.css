@@ -12,11 +12,39 @@ body {
   overflow: auto;
 }
 
+.column > h3 {
+  color: #333 !important;
+}
+
+.assignee {
+  position:absolute;
+  bottom:0;
+}
+
+.portlet-header {
+  color: #fff !important;
+}
+
+.portlet-header > a {
+  font-size: 18px;
+  color: #fff;
+  outline-color: #fff;
+  outline: inherit;
+}
+
 .btn-danger {
   background-color: #fff;
   float: right;
   border-color: #e53b3b;
   color: #e53b3b;
+}
+
+.portlet-content {
+  color: #fff !important;
+}
+
+.card-text > p > a {
+  color: #fff !important;
 }
 
 .btn-danger:active {
