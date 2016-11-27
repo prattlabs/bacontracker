@@ -46,7 +46,7 @@
 </head>
 
 <body ng-controller="IssueController">
-  <div class="container">
+  <div class="container-fluid">
     <nav class="navbar navbar-light bg-faded">
       <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2" aria-controls="exCollapsingNavbar2" aria-expanded="false" aria-label="Toggle navigation"></button>
       <div class="collapse navbar-toggleable-xs">
@@ -60,29 +60,33 @@
           </li>
 
         </ul>
-        <a class="nav-link pull-xs-right account-name-nav" href="#">Cameron Lengerich</a>
+        <div class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle account-name-nav" href="#" data-toggle="dropdown">Cameron Lengerich</a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="/api/logout">Logout</a>
+          </div>
+        </div>
       </div>
     </nav>
-
     <br>
 
     <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
-      <h2 id="pname">{{project.name}}</h2>
+      <h2 id="pname" class="header">{{project.name}}</h2>
     </div>
 
     <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
 
       <!-- Issue Section -->
-      <div class="card card-block portlet-block">
+      <!-- <div class="card card-block portlet-block"> -->
 
         <!-- Search Box -->
         <div class="form-group">
-          <input type="text" class="form-control" ng-model="filter" placeholder="Filter: issue, author">
+          <input type="text issue-search" class="form-control" ng-model="filter" placeholder="Filter: issue, author">
         </div>
 
         <!-- Issues -->
-        <div class="column" id="issueState_{{$index}}" ng-repeat="state in ['Open', 'In Progress', 'Closed']"><h3>{{state}}</h3>
-          <div class="portlet card card-danger" id="issueOrder_{{issue._id}}" ng-repeat="issue in issues | filter:filter | filter:{state:$index}">
+        <div class="column header" id="issueState_{{$index}}" ng-repeat="state in ['Open', 'In Progress', 'Closed']"><h3>{{state}}</h3>
+          <div class="portlet card issue" id="issueOrder_{{issue._id}}" ng-repeat="issue in issues | filter:filter | filter:{state:$index}">
             <div class="portlet-header card-header">
               <a href="#" data-toggle="modal" data-target="#editIssue" ng-click="setIssue(issue)"><b>{{issue.title}}</b></a>
             </div>
@@ -92,7 +96,7 @@
             </div>
           </div>
         </div>
-      </div>
+      <!-- </div> -->
 
       <!-- Modal -->
       <div id="editIssue" class="modal fade" role="dialog">

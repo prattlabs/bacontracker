@@ -8,7 +8,7 @@
   <title>Projects</title>
 </head>
 
-<body class="container" ng-controller="ProjectController">
+<body class="container-fluid" ng-controller="ProjectController">
 
   <nav class="navbar navbar-light bg-faded">
     <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2" aria-controls="exCollapsingNavbar2" aria-expanded="false" aria-label="Toggle navigation"></button>
@@ -19,11 +19,15 @@
           <a class="nav-link" href="#">Projects</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Account</a>
+          <a class="nav-link" href="#">Accoun sert</a>
         </li>
-
       </ul>
-      <a class="nav-link pull-xs-right account-name-nav" href="#">Cameron Lengerich</a>
+      <div class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle account-name-nav" href="#" data-toggle="dropdown">Cameron Lengerich</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="/api/logout">Logout</a>
+        </div>
+      </div>
     </div>
   </nav>
 
@@ -33,11 +37,11 @@
 
     <div class="projectsOwned">
       <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
-        <h3>Projects you own</h3>
+        <h3 class="header">Projects you own</h3>
       </div>
 
       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4" ng-repeat="project in myProjects">
-        <div class="card">
+        <div class="card project">
           <div class="card-block card-block-info">
             <h4 class="card-title">{{project.name}}</h4>
             <p class="card-text">{{project.description}}</p>
@@ -53,11 +57,11 @@
 
       <div id="projectsCollaborated">
         <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
-          <h3>Projects you collaborate on</h3>
+          <h3 class="header">Projects you collaborate on</h3>
         </div>
 
         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4" ng-repeat="project in collabProjects">
-          <div class="card">
+          <div class="card project">
             <div class="card-block card-block-info">
               <h4 class="card-title">{{project.name}}</h4>
               <p class="card-text">{{project.description}}</p>
