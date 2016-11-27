@@ -136,6 +136,13 @@ input[type=text]:focus {
   min-width: 500px;
 }
 
+.draggable {
+  cursor: move; /* fallback if grab cursor is unsupported */
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
 .blockquote {
   font-size: 1rem;
   border-left: .15rem solid #6f6f6f;

@@ -10,7 +10,7 @@
     $(function() {
       $(".column").sortable({
         connectWith: ".column",
-        handle: ".portlet-header",
+        handle: ".draggable",
         cancel: ".portlet-toggle",
         placeholder: "portlet-placeholder ui-corner-all",
         update: function(event, ui) {
@@ -87,10 +87,10 @@
         <!-- Issues -->
         <div class="column header" id="issueState_{{$index}}" ng-repeat="state in ['Open', 'In Progress', 'Closed']"><h3>{{state}}</h3>
           <div class="portlet card issue" id="issueOrder_{{issue._id}}" ng-repeat="issue in issues | filter:filter | filter:{state:$index}">
-            <div class="portlet-header card-header">
+            <div class="portlet-header card-header draggable">
               <a href="#" data-toggle="modal" data-target="#editIssue" ng-click="setIssue(issue)"><b>{{issue.title}}</b></a>
             </div>
-            <div class="portlet-content card-text">
+            <div class="portlet-content card-text draggable">
               <p>{{issue.description}}</p>
               <p class="assignee blockquote"><a href="#">{{issue.assignee}}</a></p>
             </div>
