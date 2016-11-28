@@ -35,6 +35,7 @@ body {
 .assignee {
   position:absolute;
   bottom:0;
+  width: 100%;
 }
 
 .issue.search {
@@ -135,6 +136,17 @@ input[type=checkbox] {
 
 input[type=text]:focus {
   border-color: #e53b3b;
+}
+
+.portlet-block {
+  min-width: 500px;
+}
+
+.draggable {
+  cursor: move; /* fallback if grab cursor is unsupported */
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
 }
 
 .blockquote {
