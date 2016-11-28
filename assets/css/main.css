@@ -8,8 +8,18 @@ body {
     background-attachment: fixed;
 }
 
-#projectsCollaborated {
-  margin-top: 2rem;
+#projectsOwned > div > h3 {
+  margin-top: 1em !important;
+  margin-bottom: 0.5em;
+}
+
+#projectsCollaborated > div > h3 {
+  margin-top: 2em !important;
+  margin-bottom: 0.5em;
+}
+
+#issue-section > div {
+ margin-top: 1em;
 }
 
 .clearfix {
@@ -21,18 +31,14 @@ body {
   color: white !important;
 }
 
+
 .assignee {
   position:absolute;
   bottom:0;
 }
 
-.portlet-header > a {
-  font-size: 1.15rem;
-  color: #333;
-}
-
 .issue.search {
-  margin-right: 20%;
+  margin-right: 3rem;
 }
 
 .btn-danger {
@@ -40,6 +46,7 @@ body {
   float: right;
   border-color: #e53b3b;
   color: #e53b3b;
+  outline-color: #e53b3b !important;
 }
 
 .card-text > p > a {
@@ -47,8 +54,10 @@ body {
 }
 
 .btn-danger:active {
-  background-color: #eebf77 !important;
-  border-color: #eebf77 !important;
+  background-color: white !important;
+  color: #e53b3b !important;
+  border-color: #e53b3b !important;
+  outline-color: #e53b3b !important;
 }
 
 .card-block {
@@ -67,7 +76,7 @@ body {
 }
 
 .card.project {
-  min-height: 200px;
+  min-height: 175px;
 }
 
 .card-title {
@@ -81,10 +90,6 @@ body {
 
 .dropdown {
   float: right;
-}
-
-.ui-sortable-helper {
-  border-color: #e53b3b;
 }
 
 .account-name-nav {
@@ -132,17 +137,9 @@ input[type=text]:focus {
   border-color: #e53b3b;
 }
 
-.portlet-block {
-  min-width: 500px;
-}
-
 .blockquote {
   font-size: 1rem;
   border-left: .15rem solid #6f6f6f;
-}
-
-#pname {
-  margin-bottom: 1rem;
 }
 
 .column {
@@ -150,37 +147,56 @@ input[type=text]:focus {
   float: left;
   padding-bottom: 100px;
 }
+
 .portlet {
-  margin: 0 3em 1em 0;
+  opacity: .96;
+  margin-bottom: 1.25em;
   padding: 0.3em;
   box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
   min-height: 150px;
   border: 3px;
-  filter: grayscale(25%);
   text-shadow: none;
   color: #333;
 }
+
 .portlet:hover {
   box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
+
 .portlet-header {
   padding: 0.2em 0.3em;
   margin-bottom: 0.5em;
   position: relative;
   background-color: inherit;
 }
+
+.portlet-header > a {
+  font-size: 1.15rem;
+  color: #333;
+}
+
+.portlet-block {
+  min-width: 500px;
+}
+
 .portlet-toggle {
   position: absolute;
   top: 50%;
   right: 0;
   margin-top: -8px;
 }
+
 .portlet-content {
   padding: 0.4em;
 }
+
 .portlet-placeholder {
   border: 1px dotted white;
   margin: 0 1em 1em 0;
   height: 150px;
-  width: 92%;
+  width: 100%;
+}
+
+.portlet.ui-sortable-helper {
+  border-color: #e53b3b;
 }
