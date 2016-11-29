@@ -17,11 +17,15 @@
         update: function(event, ui) {
           var data = $(this).sortable('serialize');
           data = "state=" + $(this).attr('id') + "&" + data;
+          
+          // Need to staggar updates by a few hundred ms so that we don't get a race condition
+          window.setTimeout(function(){
           $.ajax({
             data: data,
             type: 'PUT',
             url: 'api/issues/updateOrder?pname=' + $('#pname').text()
-          });
+          })}, ($(this).attr('id').substr($(this).attr('id').length - 1) + 1) * 100
+          );
         }
       });
 
