@@ -38,8 +38,9 @@ body {
   width: 100%;
 }
 
-.issue.search {
+.issue-search {
   margin-right: 3rem;
+  margin-bottom: 1em;
 }
 
 .btn-danger {
