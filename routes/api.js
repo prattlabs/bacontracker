@@ -341,12 +341,12 @@ router.post('/issues', (req, res) => {
     if (!req.user) {
         handleError(new Error("User unauthenticated"), HTTP.UNAUTHORIZED, res);
     }
-    else if (!req.body || !req.body.pname || !req.body.ititle || !req.body.idescription) {
+    else if (!req.query || !req.query.pname || !req.query.ititle || !req.query.idescription) {
         handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
     }
     else {
         // Find the project
-        var reqProj = findAssociatedProject(req.user, req.body.pname);
+        var reqProj = findAssociatedProject(req.user, req.query.pname);
         if (!reqProj) {
             handleError(new Error("Could not find the project to make the issue"), HTTP.BAD_REQUEST, res);
         }
@@ -354,8 +354,8 @@ router.post('/issues', (req, res) => {
 
             // Project found, create an issue.
             var newIssue = new Issue({
-                title: req.body.ititle,
-                description: req.body.idescription,
+                title: req.query.ititle,
+                description: req.query.idescription,
                 number: reqProj._nextinum
             });
 
@@ -418,7 +418,7 @@ router.put('/issues', (req, res) => {
                 if (!issue.state || issue.state != req.query.istate) {
                     issue.state = req.query.istate;
                 }
-                if (!issue.assignee || issue.assignee != req.query.iassignee) {
+                if (issue.assignee != req.query.iassignee || !issue.assignee) {
                     issue.assignee = req.query.iassignee;
                 }
 

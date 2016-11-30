@@ -51,6 +51,11 @@ body {
   outline-color: #e53b3b !important;
 }
 
+.create-btn {
+  float: left !important;
+  margin-bottom: 1em;
+}
+
 .card-text > p > a {
   color: #333;
 }
