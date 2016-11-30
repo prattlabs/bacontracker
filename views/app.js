@@ -77,12 +77,12 @@ app.controller('IssueController', ['$scope', '$http', '$log', 'ProjectService',
     };
 
     $scope.saveIssue = function(issue) {
+        // Hide the edit issue dialog manually
+        $('#editIssue').modal('hide');
         // If a new issue, set it up properly.
         if (!issue.state) {
             issue.state = 0;
         }
-        // Hide the edit issue dialog manually
-        $('#editIssue').modal('hide');
         var url;
         // If the issue is not in the list of issues, add it.  Otherwise, update it.
         if ($scope.issues.filter(function(issue){return issue.number===$scope.issue.number}).length===0) {
