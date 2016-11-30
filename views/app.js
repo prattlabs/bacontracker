@@ -79,7 +79,7 @@ app.controller('IssueController', ['$scope', '$http', '$log', 'ProjectService',
     $scope.saveIssue = function(issue) {
         // If a new issue, set it up properly.
         if (!issue.state) {
-            issue.state = "Open";
+            issue.state = 0;
         }
         // Hide the edit issue dialog manually
         $('#editIssue').modal('hide');
