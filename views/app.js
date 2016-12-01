@@ -56,7 +56,13 @@ app.controller('ProjectController', ['$scope','$http', '$location', 'ProjectServ
 app.controller('IssueController', ['$scope', '$http', '$log', 'ProjectService',
     function($scope, $http, $log, ProjectService) {
 
-    $scope.form = {};
+    $scope.deleteClicks = 0;
+    $scope.deleteTimer = setInterval(function () {
+        $scope.log($scope.deleteClicks);
+        if ($scope.deleteClicks > 0) {
+            $scope.deleteClicks = 0;
+        }
+    }, 5000)
 
     $scope.log = function(message) {
         $log.debug(message);
@@ -124,6 +130,32 @@ app.controller('IssueController', ['$scope', '$http', '$log', 'ProjectService',
 
     $scope.createIssue = function() {
         $scope.issue = {};
+    }
+    
+    $scope.deleteIssue = function (issue) {
+        if ($scope.deleteClicks < 2) {
+            $scope.deleteClicks++;
+            var remainingClicks = 3 - $scope.deleteClicks;
+            $(".delete-btn").notify(
+                "Press " + remainingClicks + " more times quickly to delete", {
+                    position: "bottom",
+                    className: "error"
+                });
+        } else {
+            url = "/api/issues";
+            url += "?pname=" + $scope.project.name;
+            url += "&inum=" + issue.number;
+            $http.delete(url)
+                .then(function success(response) {
+                        $scope.response = response.data;
+                        $scope.log($scope.response);
+                    }, function error(response) {
+                        $scope.response = "error: " + response;
+                    }
+                );
+            // Hide the edit issue dialog manually
+            $('#editIssue').modal('hide');
+        }
     }
 
 }]);

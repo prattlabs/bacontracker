@@ -56,6 +56,14 @@ body {
   margin-bottom: 1em;
 }
 
+.delete-btn {
+  float: left;
+}
+
+.delete-msg {
+  float: left;
+}
+
 .card-text > p > a {
   color: #333;
 }
