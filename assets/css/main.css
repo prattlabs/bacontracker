@@ -8,6 +8,7 @@ body {
     background-attachment: fixed;
 }
 
+
 #projectsOwned > div > h3 {
   margin-top: 1em !important;
   margin-bottom: 0.5em;
@@ -31,7 +32,6 @@ body {
   color: white !important;
 }
 
-
 .assignee {
   position:absolute;
   bottom:0;
@@ -48,7 +48,23 @@ body {
   float: right;
   border-color: #e53b3b;
   color: #e53b3b;
-  outline-color: #e53b3b !important;
+}
+
+.btn-info {
+  color: #5bc0de;
+  background-color: white;
+  outline-color: #5bc0de;
+}
+
+.btn-default {
+  color: #c0c0c0 !important;
+  background-color: white;
+  border-color: #c0c0c0;
+}
+
+.btn-default:hover {
+  color: white !important;
+  background-color: #c0c0c0;
 }
 
 .create-btn {
@@ -130,6 +146,10 @@ body {
 
 .modal-dialog {
   color: black;
+}
+
+.modal-body > input {
+  margin-bottom: 1em;
 }
 
 #editclear {
