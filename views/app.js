@@ -107,12 +107,12 @@ app.controller('IssueController', ['$scope', '$http', '$log', '$timeout', 'Proje
             $http.post(url)
                 .then(function success(response) {
                         $scope.response = response.data;
-                        $scope.refreshIssues();
                     }, function error(response) {
                         $scope.response = "error: " + response;
-                        $scope.refreshIssues();
                     }
-                );
+                ).finally(function () {
+                    $scope.refreshIssues();
+                });
         } else {
             url = "/api/issues";
             url += "?pname=" + $scope.project.name;
@@ -125,12 +125,12 @@ app.controller('IssueController', ['$scope', '$http', '$log', '$timeout', 'Proje
             $http.put(url)
                 .then(function success(response) {
                         $scope.response = response.data;
-                        $scope.refreshIssues();
                     }, function error(response) {
                         $scope.response = "error: " + response;
-                        $scope.refreshIssues();
                     }
-                );
+                ).finally(function () {
+                $scope.refreshIssues();
+            });
         }
     }
 
@@ -157,14 +157,14 @@ app.controller('IssueController', ['$scope', '$http', '$log', '$timeout', 'Proje
             $http.delete(url)
                 .then(function success(response) {
                         $scope.response = response.data;
-                        $scope.refreshIssues();
                         // Hide the edit issue dialog manually
                         $('#editIssue').modal('hide');
                     }, function error(response) {
                         $scope.response = "error: " + response;
-                        $scope.refreshIssues();
                     }
-                );
+                ).finally(function () {
+                $scope.refreshIssues();
+            });;
         }
     }
 
@@ -207,7 +207,7 @@ app.controller('IssueController', ['$scope', '$http', '$log', '$timeout', 'Proje
                         data: data,
                         type: 'PUT',
                         url: 'api/issues/updateOrder?pname=' + $('#pname').text(),
-                        success: function () {
+                        complete: function () {
                             $scope.refreshIssues();
                         }
                     })

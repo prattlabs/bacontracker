@@ -82,7 +82,7 @@
             </div>
             <div class="modal-footer">
               <button type="submit" class="btn btn-info" ng-click="this.editForm.$valid && saveIssue(issue)">Save and Close</button>
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="refreshIssues()">Close</button>
               <button type="button" class="btn btn-danger delete-btn" ng-click="deleteIssue(issue)">Delete</button>
             </div>
           </form>
