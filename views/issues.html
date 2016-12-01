@@ -110,9 +110,9 @@
             </div>
             <div class="modal-body">
               <span>Description: </span><input class="form-control" type="text" ng-model="issue.description" ng-change="log(issue)" required />
-              <span>Number: </span><input class="form-control" type="text" ng-readonly="true" ng-model="issue.number" ng-change="log(issue)" />
-              <span>State: </span><input class="form-control" type="text" ng-readonly="true" ng-model="issue.state" ng-change="log(issue)" />
               <span>Assignee: </span><input class="form-control" type="text" ng-model="issue.assignee" ng-change="log(issue)" />
+              Number: <span class="badge">{{issue.number}}</span><br>
+              State: <span class="badge">{{issue.state}}</span>
             </div>
             <div class="modal-footer">
               <button type="submit" class="btn btn-info" ng-click="this.editForm.$valid && saveIssue(issue)">Save and Close</button>
