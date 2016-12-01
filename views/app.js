@@ -170,13 +170,15 @@ app.controller('IssueController', ['$scope', '$http', '$log', '$timeout', 'Proje
 
 
     $scope.selectClass = function(issue) {
-      if (issue.state == 0) {
-        return 'tag-danger';
-      } else if (issue.state == 1) {
-        return 'tag-warning';
-      } else if (issue.state == 2) {
-        return 'tag-success';
-      }
+        if (issue) {
+            if (issue.state == 0) {
+                return 'tag-danger';
+            } else if (issue.state == 1) {
+                return 'tag-warning';
+            } else if (issue.state == 2) {
+                return 'tag-success';
+            }
+        }
     }
 
     $scope.init = function() {
