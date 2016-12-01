@@ -131,7 +131,7 @@ app.controller('IssueController', ['$scope', '$http', '$log', 'ProjectService',
     $scope.createIssue = function() {
         $scope.issue = {};
     }
-    
+
     $scope.deleteIssue = function (issue) {
         if ($scope.deleteClicks < 2) {
             $scope.deleteClicks++;
@@ -156,6 +156,16 @@ app.controller('IssueController', ['$scope', '$http', '$log', 'ProjectService',
             // Hide the edit issue dialog manually
             $('#editIssue').modal('hide');
         }
+    }
+
+    $scope.selectClass = function(issue) {
+      if (issue.state == 0) {
+        return 'tag-danger';
+      } else if (issue.state == 1) {
+        return 'tag-warning';
+      } else if (issue.state == 2) {
+        return 'tag-success';
+      }
     }
 
 }]);

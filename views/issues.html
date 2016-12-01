@@ -68,7 +68,7 @@
         <div class="nav-item dropdown">
           <a class="nav-link dropdown-toggle account-name-nav" href="#" data-toggle="dropdown">Cameron Lengerich</a>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="/api/logout">Logout</a>
+            <a class="dropdown-item" href="/logout">Logout</a>
           </div>
         </div>
       </div>
@@ -118,7 +118,7 @@
               </tr>
               <tr>
                 <td>State:</td>
-                <td><span class="tag tag-success">{{issue.state}}</span></td>
+                <td><span class="tag" ng-class="selectClass(issue)">{{issue.state}}</span></td>
               </tr>
             </table>
             </div>
