@@ -27,8 +27,7 @@ app.service('ProjectService', function () {
 
     this.setProject = function(project) {
         this.project = project;
-    };
-
+    }
     this.getProject = function() {
         return this.project;
     }
@@ -36,6 +35,8 @@ app.service('ProjectService', function () {
 
 app.controller('ProjectController', ['$scope','$http', '$location', 'ProjectService', '$log',
     function($scope, $http, $location, ProjectService, $log) {
+
+    $scope.username = "";
 
     $http.get("/api/projects")
         .then(function success(response) {
@@ -51,6 +52,18 @@ app.controller('ProjectController', ['$scope','$http', '$location', 'ProjectServ
         // Go to "page" screen
         $location.path(page);
     }
+
+    $scope.init = function() {
+        $http.get("/api/currentUser")
+            .then(function success(response) {
+                    $scope.username = response.data.username;
+                }, function error(response) {
+                    $log.error("Couldn't retrieve username: " + response)
+                }
+            )
+    }
+    $scope.init();
+
 }]);
 
 app.controller('IssueController', ['$scope', '$http', '$log', '$timeout', 'ProjectService',
