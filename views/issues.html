@@ -6,48 +6,6 @@
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Issues</title>
-  <script>
-    $(function() {
-      $(".column").sortable({
-        items : '.issue',
-        connectWith: ".column",
-        handle: ".draggable",
-        cancel: ".portlet-toggle",
-        placeholder: "portlet-placeholder ui-corner-all",
-        update: function(event, ui) {
-          var data = $(this).sortable('serialize');
-          data = "state=" + $(this).attr('id') + "&" + data;
-
-          // Need to staggar updates by a few hundred ms so that we don't get a race condition
-          window.setTimeout(function(){
-          $.ajax({
-            data: data,
-            type: 'PUT',
-            url: 'api/issues/updateOrder?pname=' + $('#pname').text()
-          })}, ($(this).attr('id').substr($(this).attr('id').length - 1) + 1) * 100
-          );
-        }
-      });
-
-      $(".portlet")
-        .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
-        .find(".portlet-header")
-        .addClass("ui-widget-header ui-corner-all")
-        .prepend("<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
-
-      $(".portlet-toggle").on("click", function() {
-        var icon = $(this);
-        icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
-        icon.closest(".portlet").find(".portlet-content").toggle();
-      });
-    });
-    $(document).ready(function() {
-      $('[data-toggle="popover"]').popover();
-    });
-    $("#editclear").click(function() {
-      $("#editinput").val('');
-    });
-  </script>
 </head>
 
 <body ng-controller="IssueController as ctrl">
@@ -106,7 +64,7 @@
           <form name="editForm">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <span>Title: </span><input class="form-control" type="text" ng-model="issue.title" ng-change="log(issue)" required />
+              <span>Title: </span><input class="form-control" type="text" ng-model="issue.title" required />
             </div>
             <div class="modal-body">
               <span>Description:</span><input class="form-control" type="text" ng-model="issue.description" ng-change="log(issue)" required />

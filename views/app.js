@@ -53,30 +53,33 @@ app.controller('ProjectController', ['$scope','$http', '$location', 'ProjectServ
     }
 }]);
 
-app.controller('IssueController', ['$scope', '$http', '$log', 'ProjectService',
-    function($scope, $http, $log, ProjectService) {
-
-    $scope.deleteClicks = 0;
-    $scope.deleteTimer = setInterval(function () {
-        $scope.log($scope.deleteClicks);
-        if ($scope.deleteClicks > 0) {
-            $scope.deleteClicks = 0;
-        }
-    }, 5000)
+app.controller('IssueController', ['$scope', '$http', '$log', '$timeout', 'ProjectService',
+    function($scope, $http, $log, $timeout, ProjectService) {
 
     $scope.log = function(message) {
         $log.debug(message);
     };
 
+    $scope.deleteClicks = 0;
+    $scope.deleteTimer = setInterval(function () {
+        if ($scope.deleteClicks > 0) {
+            $scope.deleteClicks = 0;
+        }
+    }, 5000)
+
     $scope.project = ProjectService.getProject();
 
-    $http.get("/api/issues?pname=" + $scope.project.name)
-        .then(function success(response) {
-            $scope.issues = response.data;
-        }, function error(response) {
-            $scope.issues = "error: " + response;
-        }
-    );
+    $scope.refreshIssues = function() {
+        $scope.issues = [];
+        $http.get("/api/issues?pname=" + $scope.project.name)
+            .then(function success(response) {
+                    $scope.issues = response.data;
+                }, function error(response) {
+                    $scope.issues = "error: " + response;
+                }
+            );
+    }
+    $scope.refreshIssues();
 
     $scope.setIssue = function(issue) {
         $scope.issue = issue;
@@ -104,8 +107,10 @@ app.controller('IssueController', ['$scope', '$http', '$log', 'ProjectService',
             $http.post(url)
                 .then(function success(response) {
                         $scope.response = response.data;
+                        $scope.refreshIssues();
                     }, function error(response) {
                         $scope.response = "error: " + response;
+                        $scope.refreshIssues();
                     }
                 );
         } else {
@@ -120,9 +125,10 @@ app.controller('IssueController', ['$scope', '$http', '$log', 'ProjectService',
             $http.put(url)
                 .then(function success(response) {
                         $scope.response = response.data;
-                        $scope.log($scope.response);
+                        $scope.refreshIssues();
                     }, function error(response) {
                         $scope.response = "error: " + response;
+                        $scope.refreshIssues();
                     }
                 );
         }
@@ -130,6 +136,9 @@ app.controller('IssueController', ['$scope', '$http', '$log', 'ProjectService',
 
     $scope.createIssue = function() {
         $scope.issue = {};
+        $scope.refreshIssues();
+        // Hide the delete notification is case it is still hanging around
+        $(".delete-btn").trigger('notify-hide');
     }
     
     $scope.deleteIssue = function (issue) {
@@ -148,14 +157,56 @@ app.controller('IssueController', ['$scope', '$http', '$log', 'ProjectService',
             $http.delete(url)
                 .then(function success(response) {
                         $scope.response = response.data;
-                        $scope.log($scope.response);
+                        $scope.refreshIssues();
+                        // Hide the edit issue dialog manually
+                        $('#editIssue').modal('hide');
                     }, function error(response) {
                         $scope.response = "error: " + response;
+                        $scope.refreshIssues();
                     }
                 );
-            // Hide the edit issue dialog manually
-            $('#editIssue').modal('hide');
         }
     }
+
+    $scope.init = function() {
+        $(function () {
+            $('[data-toggle="popover"]').popover();
+            $(".portlet")
+                .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
+                .find(".portlet-header")
+                .addClass("ui-widget-header ui-corner-all")
+                .prepend("<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
+
+            $(".portlet-toggle").on("click", function() {
+                var icon = $(this);
+                icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
+                icon.closest(".portlet").find(".portlet-content").toggle();
+            });
+            $(".column").sortable({
+                items: '.issue',
+                connectWith: ".column",
+                handle: ".draggable",
+                cancel: ".portlet-toggle",
+                placeholder: "portlet-placeholder ui-corner-all",
+                update: function (event, ui) {
+                    var data = $(this).sortable('serialize');
+                    data = "state=" + $(this).attr('id') + "&" + data;
+
+                    $.ajax({
+                        data: data,
+                        type: 'PUT',
+                        url: 'api/issues/updateOrder?pname=' + $('#pname').text(),
+                        success: function () {
+                            $scope.refreshIssues();
+                        }
+                    })
+                }
+            })
+            $("#editclear").click(function() {
+                $("#editinput").val('');
+            });
+        });
+    }
+    $scope.init();
 
 }]);
