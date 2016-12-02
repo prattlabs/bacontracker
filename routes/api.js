@@ -548,7 +548,7 @@ router.get('/currentUser', (req, res) => {
             username: req.user.username
         }
 
-        sendResponse(resData, HTTP.OK, res)
+         sendResponse(resData, HTTP.OK, res)
     }
 });
 

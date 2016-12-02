@@ -36,16 +36,20 @@ app.service('ProjectService', function () {
 app.controller('ProjectController', ['$scope','$http', '$location', 'ProjectService', '$log',
     function($scope, $http, $location, ProjectService, $log) {
 
+    $scope.project = {};
     $scope.username = "";
 
-    $http.get("/api/projects")
-        .then(function success(response) {
-            $scope.myProjects = response.data.myProjects;
-            $scope.collabProjects = response.data.collabProjects;
-        }, function error(response) {
-            $scope.projects = "error: " + response;
-        }
-    );
+    $scope.refreshProjects = function () {
+        $http.get("/api/projects")
+            .then(function success(response) {
+                    $scope.myProjects = response.data.myProjects;
+                    $scope.collabProjects = response.data.collabProjects;
+                }, function error(response) {
+                    $scope.projects = "error: " + response;
+                }
+            );
+    }
+    $scope.refreshProjects();
 
     $scope.openPage = function (project, page) {
         ProjectService.setProject(project);
@@ -53,7 +57,31 @@ app.controller('ProjectController', ['$scope','$http', '$location', 'ProjectServ
         $location.path(page);
     }
 
+    $scope.initProject = function () {
+        $scope.project = {}
+    }
+
+    $scope.createProject = function () {
+        // Hide the edit issue dialog manually
+        $('#createProject').modal('hide');
+        $http.post(
+            "/api/projects",
+            {
+                "pname" : $scope.project.name,
+                "pdescription" : $scope.project.description
+            }
+        ).then(function success(response) {
+                    $scope.openPage($scope.project, '/issues');
+                }, function error(response) {
+                    $scope.response = "error: " + response;
+                }
+            ).finally(function () {
+            $scope.refreshProjects();
+        });
+    }
+
     $scope.init = function() {
+        // Get the current user to put in the top of the page
         $http.get("/api/currentUser")
             .then(function success(response) {
                     $scope.username = response.data.username;
@@ -81,6 +109,7 @@ app.controller('IssueController', ['$scope', '$http', '$log', '$timeout', 'Proje
     }, 5000)
 
     $scope.project = ProjectService.getProject();
+        $scope.issue = {};
 
     $scope.refreshIssues = function() {
         $scope.issues = [];

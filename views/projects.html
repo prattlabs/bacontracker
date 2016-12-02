@@ -35,6 +35,11 @@
 
   <div id="content">
 
+    <div class="col-md-12">
+      <input class="btn btn-danger create-btn" type="button" name="Create" data-toggle="modal" data-target="#createProject"
+             ng-click="initProject();" value="Create">
+    </div>
+
     <div id="projectsOwned">
       <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
         <h3 class="header">Projects you own</h3>
@@ -51,27 +56,48 @@
           </div>
         </div>
       </div>
+    </div>
 
-      <br>
-      <br>
+    <br>
+    <br>
 
-      <div id="projectsCollaborated">
-        <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
-          <h3 class="header">Projects you collaborate on</h3>
-        </div>
+    <div id="projectsCollaborated">
+      <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12">
+        <h3 class="header">Projects you collaborate on</h3>
+      </div>
 
-        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4" ng-repeat="project in collabProjects">
-          <div class="card project">
-            <div class="card-block card-block-info">
-              <h4 class="card-title">{{project.name}}</h4>
-              <p class="card-text">{{project.description}}</p>
-            </div>
-            <div class="card-block card-block-button">
-              <button class="btn btn-danger" type="button" name="open" ng-click="openPage(project, '/issues')">Open</button>
-            </div>
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4" ng-repeat="project in collabProjects">
+        <div class="card project">
+          <div class="card-block card-block-info">
+            <h4 class="card-title">{{project.name}}</h4>
+            <p class="card-text">{{project.description}}</p>
+          </div>
+          <div class="card-block card-block-button">
+            <button class="btn btn-danger" type="button" name="open" ng-click="openPage(project, '/issues')">Open</button>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Edit Create Project Modal Window -->
+    <div id="createProject" class="modal fade" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <form name="createForm">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <span>Name: </span><input class="form-control" type="text" ng-model="project.name" required />
+              <span>Description: </span><input class="form-control" type="text" ng-model="project.description" required />
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-info" ng-click="this.createForm.$valid && createProject()">Create</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="refreshProjects()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
 
     </div>
 </body>
