@@ -9,8 +9,6 @@ var Project = require('../models/project.js');
 var User = require('../models/user.js');
 var path = require('path');
 
-var isLoggedIn = false;
-
 // *****************************************************************
 // * Configure passportjs
 // *****************************************************************
@@ -117,11 +115,11 @@ router.post('/login', (req, res) => {
 });
 
 router.get('/whichpage', (req, res) => {
-    if (req.signup) {
-        sendResponse("/signup", HTTP.OK, res);
-        req.signup = false;
-    }
-    if (isLoggedIn) {
+    // if (req.signup) {
+    //     sendResponse("/signup", HTTP.OK, res);
+    //     req.signup = false;
+    // }
+    if (req.user) {
         sendResponse("/projects", HTTP.OK, res);
     }
     // res.sendFile(path.join(__dirname, 'views', 'index.html'))

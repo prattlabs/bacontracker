@@ -57,14 +57,31 @@ app.service('ProjectService', function ($http, $log, $location) {
 app.controller('RouteController', ['$scope', '$location', '$log', '$http',
     function($scope, $location, $log, $http) {
     $(function () {
-        $http.get("/api/whichpage")
-            .then(function success(response) {
-                // Route to the page sent back from the server
-                $location.path(response.data);
-            }, function failure(response) {
-                $log.error(response);
-            })
+        // Check for cookie and redirect
+        
+        // $location.path("/login");
+        // $http.get("/api/whichpage")
+        //     .then(function success(response) {
+        //         // Route to the page sent back from the server
+        //         $location.path(response.data);
+        //     }, function failure(response) {
+        //         $log.error(response);
+        //     })
     })
+
+    $scope.redirect = function(location){
+        $location.path(location);
+    }
+
+    $scope.login = function(){
+        // ajax
+        // Change location to pojects?
+        $(".login").notify(
+                        "Username or Password is Incorrect", {
+                            position: "right",
+                            className: "error"
+                        });
+    }
 }]);
 
 app.controller('ProjectController', ['$scope','$http', '$location', 'ProjectService', '$log',

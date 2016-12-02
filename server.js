@@ -37,22 +37,14 @@ app.use(passport.session());
 // Forward all API calls
 app.use('/api', api);
 
-// Redirect root to the login page
-app.get('/', function (req, res) {
-    // res.sendFile(path.join(__dirname, 'views', 'index.html'))
-    // if (req.cookies["connect.sid"]) {
-    //     res.redirect("/index.html");
-        // res.sendFile(path.join(__dirname, 'views', 'login.html'))
-    // }
-    // else {
-    res.redirect("/index.html");
-        // res.sendFile(path.join(__dirname, 'views', 'signup.html'))
-        // res.redirect("/signup.html");
-    // }
-});
+// // Redirect root to the login page
+// app.get('/', function (req, res) {
+//     res.redirect("/index.html");
+// });
 
 // Serve the html and static content
 app.use('/', express.static(__dirname + '/views'));
+app.use('/controllers', express.static(__dirname + '/controllers'));
 app.use('/assets', express.static(__dirname + '/assets'));
 app.get('*', function(req, res) {
     res.redirect("/");
