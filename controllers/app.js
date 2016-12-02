@@ -63,10 +63,24 @@ app.controller('RouteController', ['$scope', '$location', '$log', '$http', '$coo
         $.backstretch("../assets/img/backgrounds/tablebw.jpg");
 
         // Check for cookie and redirect to signup if new user
-        if(!$cookies.get("existingUser") && this['location'].pathname === '/') {
+        if(!$cookies.get("existingUser") && $location.path() === '/') {
             $location.path("/signup");
+            $scope.$apply();
         }
+        else if($cookies.get("existingUser")) {
+            // Check if they are already logged in.
+            if(true){
+                $http.get("/api/currentUser")
+                    .then(function success(response) {
+                            $.backstretch("../assets/img/backgrounds/table.jpg");
+                            $location.path("/projects");
+                            $scope.$apply();
+                        }, function error(response) {
 
+                        }
+                    );
+            }
+        }
     })
 
     $scope.redirect = function(location){
@@ -88,7 +102,7 @@ app.controller('RouteController', ['$scope', '$location', '$log', '$http', '$coo
                  */
                 $.backstretch("../assets/img/backgrounds/table.jpg");
                 // Change location to pojects
-                $location.path("projects");
+                $location.path("/projects");
             }, function failure(response) {  
                 // Login failed, notify the user      
                 $(".login").notify(
@@ -159,6 +173,7 @@ app.controller('ProjectController', ['$scope','$http', '$location', 'ProjectServ
                     $scope.myProjects = response.data.myProjects;
                     $scope.collabProjects = response.data.collabProjects;
                 }, function error(response) {
+                    $location.path("/login")
                     $scope.projects = "error: " + response;
                 }
             );
@@ -225,6 +240,7 @@ app.controller('ProjectController', ['$scope','$http', '$location', 'ProjectServ
             .then(function success(response) {
                     $scope.username = response.data.username;
                 }, function error(response) {
+                    $location.path("/login")
                     $log.error("Couldn't retrieve username: " + response)
                 }
             )
