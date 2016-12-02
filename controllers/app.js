@@ -57,6 +57,11 @@ app.service('ProjectService', function ($http, $log, $location) {
 app.controller('RouteController', ['$scope', '$location', '$log', '$http', '$cookies',
     function($scope, $location, $log, $http, $cookies) {
     $(function () {
+        /*
+         Fullscreen background
+         */
+        $.backstretch("../assets/img/backgrounds/tablebw.jpg");
+
         // Check for cookie and redirect to signup if new user
         if(!$cookies.get("existingUser") && this['location'].pathname === '/') {
             $location.path("/signup");
@@ -78,6 +83,10 @@ app.controller('RouteController', ['$scope', '$location', '$log', '$http', '$coo
         // Forward with ajax
         $http.post("/api/login", data)
             .then(function success(response) {
+                /*
+                 Fullscreen background
+                 */
+                $.backstretch("../assets/img/backgrounds/table.jpg");
                 // Change location to pojects
                 $location.path("projects");
             }, function failure(response) {  
