@@ -105,33 +105,14 @@ router.post('/login', (req, res) => {
                 var resData = {
                     username: user.username
                 }
-                isLoggedIn = true;
-                // sendResponse(resData, HTTP.OK, res);
-                // res.redirect("/");
-                res.sendFile(path.join(__dirname, '../views', 'index.html'))
+
+                // Save the logged in cookie
+                res.cookie("existingUser", "existingUser", {expires: new Date(4102444800000)}) // Expires Jan 1 2100
+
+                sendResponse(resData, HTTP.OK, res);
             })
         }
     })(req, res);
-});
-
-router.get('/whichpage', (req, res) => {
-    // if (req.signup) {
-    //     sendResponse("/signup", HTTP.OK, res);
-    //     req.signup = false;
-    // }
-    if (req.user) {
-        sendResponse("/projects", HTTP.OK, res);
-    }
-    // res.sendFile(path.join(__dirname, 'views', 'index.html'))
-    else if (req.cookies["connect.sid"]) {
-        sendResponse("/login", HTTP.OK, res);
-        // res.sendFile(path.join(__dirname, 'views', 'login.html'))
-    }
-    else {
-        sendResponse("/signup", HTTP.OK, res);
-        // res.sendFile(path.join(__dirname, 'views', 'signup.html'))
-        // res.redirect("/signup.html");
-    }
 });
 
 router.get('/logout', (req, res) => {
@@ -157,36 +138,38 @@ router.post('/signup', (req, res) => {
     if (req.body["form-password"] !== req.body["form-password2"] || !req.body["form-username"]) {
         handleError(new Error("Passwords do not match"), HTTP.BAD_REQUEST, res);
     }
+    else {
 
-    var user = new User({
-        username: req.body["form-username"],
-        password: req.body["form-password"]
-    });
+        var user = new User({
+            username: req.body["form-username"],
+            password: req.body["form-password"]
+        });
 
-    // Save the new user
-    user.save((err) => {
-        if (err) {
-            handleError(err, 500, res);
-        }
-        else {
-            winston.debug("User created", user.username);
+        // Save the new user
+        user.save((err) => {
+            if (err) {
+                handleError(err, 500, res);
+            }
+            else {
+                winston.debug("User created", user.username);
 
-            // Serialize the user to the cookie
-            req.login(user, (err) => {
-                if (err) {
-                    handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
-                }
+                // Serialize the user to the cookie
+                req.login(user, (err) => {
+                    if (err) {
+                        handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
+                    }
 
-                winston.debug(user.username, "has just logged in.");
-                var resData = {
-                    username: user.username
-                };
+                    winston.debug(user.username, "has just logged in.");
+                    var resData = {
+                        username: user.username
+                    };
 
-                // sendResponse(resData, HTTP.OK, res); TODO: Make the front end redirect
-                res.redirect("/index.html");
-            });
-        }
-    })
+                    // sendResponse(resData, HTTP.OK, res); TODO: Make the front end redirect
+                    res.redirect("/index.html");
+                });
+            }
+        })
+    }
 });
 
 router.get('/projects', (req, res) => {

@@ -37,7 +37,7 @@
               </div>
             </div>
             <div class="form-bottom">
-              <form role="form" action="/api/signup" method="post" class="login-form">
+              <form ng-submit="signup()" class="login-form">
                 <div class="form-group">
                   <label class="sr-only" for="form-username">Username</label>
                   <input type="text" name="form-username" placeholder="Username" class="form-username form-control" id="form-username" required>
@@ -58,7 +58,7 @@
         <br>
         <div class="row">
           <div class="col-sm-6 col-sm-offset-3">
-            <button class="btn" ng-click="redirect('login')">Login</button>
+            <button class="btn" ng-click="redirect('/login')">Login</button>
           </div>
         </div>
         <div class="row">
