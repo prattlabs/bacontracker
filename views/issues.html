@@ -24,9 +24,9 @@
 
         </ul>
         <div class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle account-name-nav" href="#" data-toggle="dropdown">Cameron Lengerich</a>
+          <a class="nav-link dropdown-toggle account-name-nav" href="#" data-toggle="dropdown">{{username}}</a>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="/logout">Logout</a>
+            <button class="dropdown-item" ng-click="logout()">Logout</button>
           </div>
         </div>
       </div>
@@ -64,11 +64,11 @@
           <form name="editForm">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <span>Title: </span><input class="form-control" type="text" ng-model="issue.title" required />
+              <span>Title: </span><input class="form-control" type="text" ng-model="issue.title" placeholder="Title" required />
             </div>
             <div class="modal-body">
-              <span>Description:</span><input class="form-control" type="text" ng-model="issue.description" ng-change="log(issue)" required />
-              <span>Assignee:</span><input class="form-control" type="text" ng-model="issue.assignee" ng-change="log(issue)" />
+              <span>Description:</span><input class="form-control" type="text" ng-model="issue.description" ng-change="log(issue)" placeholder="Description" required />
+              <span>Assignee:</span><input class="form-control" type="text" ng-model="issue.assignee" ng-change="log(issue)" placeholder="Assignee" />
               <table>
               <tr>
                 <td>Number:&nbsp;</td>

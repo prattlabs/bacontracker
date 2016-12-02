@@ -39,12 +39,15 @@ app.use('/api', api);
 
 // Redirect root to the login page
 app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, 'views', 'index.html'))
+    // res.sendFile(path.join(__dirname, 'views', 'index.html'))
     // if (req.cookies["connect.sid"]) {
-    //     res.redirect("/login.html");
+    //     res.redirect("/index.html");
+        // res.sendFile(path.join(__dirname, 'views', 'login.html'))
     // }
     // else {
-    //     res.redirect("/signup.html");
+    res.redirect("/index.html");
+        // res.sendFile(path.join(__dirname, 'views', 'signup.html'))
+        // res.redirect("/signup.html");
     // }
 });
 

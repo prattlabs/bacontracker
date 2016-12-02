@@ -3,8 +3,8 @@ var app = angular.module('bacontracker', ['ngRoute']);
 app.config(function($routeProvider, $locationProvider) {
     $routeProvider
         .when("/", {
-            templateUrl : "projects.html",
-            controller : 'ProjectController'
+            templateUrl : "login.html",
+            controller : 'RouteController'
         })
         .when("/projects", {
             templateUrl : "projects.html",
@@ -14,15 +14,25 @@ app.config(function($routeProvider, $locationProvider) {
             templateUrl : "issues.html",
             controller: "IssueController"
         })
+        .when("/login", {
+            templateUrl : "login.html",
+            controller: "RouteController"
+        })
+        .when("/signup", {
+            templateUrl : "signup.html",
+            controller: "RouteController"
+        })
         .otherwise({
-            templateUrl: "projects.html",
-            controller : 'ProjectController'
+            // templateUrl: "projects.html",
+            // controller : 'ProjectController'
+            templateUrl : "login.html",
+            controller : 'RouteController'
         });
-        // use the HTML5 History API
-        $locationProvider.html5Mode(true);
+    // use the HTML5 History API
+    $locationProvider.html5Mode(true);
 });
 
-app.service('ProjectService', function () {
+app.service('ProjectService', function ($http, $log, $location) {
     var project;
 
     this.setProject = function(project) {
@@ -31,13 +41,39 @@ app.service('ProjectService', function () {
     this.getProject = function() {
         return this.project;
     }
+
+    this.logout = function () {
+        $http.get("/api/logout")
+            .then(function success() {
+                $log.error("Logged out")
+                $location.path("/");
+            }, function failure() {
+                $log.error("Failed to log out")
+            });
+    }
+
 });
+
+app.controller('RouteController', ['$scope', '$location', '$log', '$http',
+    function($scope, $location, $log, $http) {
+    $(function () {
+        $http.get("/api/whichpage")
+            .then(function success(response) {
+                // Route to the page sent back from the server
+                $location.path(response.data);
+            }, function failure(response) {
+                $log.error(response);
+            })
+    })
+}]);
 
 app.controller('ProjectController', ['$scope','$http', '$location', 'ProjectService', '$log',
     function($scope, $http, $location, ProjectService, $log) {
 
     $scope.project = {};
     $scope.username = "";
+
+    $scope.logout = ProjectService.logout;
 
     $scope.refreshProjects = function () {
         $http.get("/api/projects")
@@ -61,9 +97,11 @@ app.controller('ProjectController', ['$scope','$http', '$location', 'ProjectServ
         $scope.project = {}
     }
 
+    $scope.setProject = function (project) {
+        $scope.project = project;
+    }
+
     $scope.createProject = function () {
-        // Hide the edit issue dialog manually
-        $('#createProject').modal('hide');
         $http.post(
             "/api/projects",
             {
@@ -71,7 +109,30 @@ app.controller('ProjectController', ['$scope','$http', '$location', 'ProjectServ
                 "pdescription" : $scope.project.description
             }
         ).then(function success(response) {
-                    $scope.openPage($scope.project, '/issues');
+                    // Hide the edit issue dialog manually
+                    $('#createProject').modal('hide');
+                    // $scope.openPage($scope.project, '/issues');
+                }, function error(response) {
+                    $scope.response = "error: " + response;
+                    $("#create").notify(
+                        "The project " + $scope.project.name + " already exists, silly!", {
+                            position: "left",
+                            className: "error"
+                        });
+                }
+            ).finally(function () {
+            $scope.refreshProjects();
+        });
+    }
+
+    $scope.deleteProject = function (project) {
+        url = "/api/projects";
+        url += "?pname=" + $scope.project.name;
+        $http.delete(url)
+            .then(function success(response) {
+                    $scope.response = response.data;
+                    // Hide the edit issue dialog manually
+                    $('#deleteProject').modal('hide');
                 }, function error(response) {
                     $scope.response = "error: " + response;
                 }
@@ -96,6 +157,8 @@ app.controller('ProjectController', ['$scope','$http', '$location', 'ProjectServ
 
 app.controller('IssueController', ['$scope', '$http', '$log', '$timeout', 'ProjectService',
     function($scope, $http, $log, $timeout, ProjectService) {
+
+    $scope.logout = ProjectService.logout;
 
     $scope.log = function(message) {
         $log.debug(message);
@@ -206,7 +269,7 @@ app.controller('IssueController', ['$scope', '$http', '$log', '$timeout', 'Proje
                     }
                 ).finally(function () {
                 $scope.refreshIssues();
-            });;
+            });
         }
     }
 
@@ -225,6 +288,14 @@ app.controller('IssueController', ['$scope', '$http', '$log', '$timeout', 'Proje
 
     $scope.init = function() {
         $(function () {
+            // Get the current user to put in the top of the page
+            $http.get("/api/currentUser")
+                .then(function success(response) {
+                        $scope.username = response.data.username;
+                    }, function error(response) {
+                        $log.error("Couldn't retrieve username: " + response)
+                    }
+                )
             $('[data-toggle="popover"]').popover();
             $(".portlet")
                 .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")

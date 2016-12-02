@@ -9,20 +9,22 @@ var Project = require('../models/project.js');
 var User = require('../models/user.js');
 var path = require('path');
 
+var isLoggedIn = false;
+
 // *****************************************************************
 // * Configure passportjs
 // *****************************************************************
 
 // Remove this middleware to start enforcing login requirements
-router.use((req, res, next) => {
-    console.log("Faking user as 'user1'");
-    User.find({ username: "user1" }, (err, users) => {
-        User.deepPopulate(users[0], "projects.issues colabProjects.issues", () => {
-            req.user = users[0];
-            next();
-        });
-    });
-});
+// router.use((req, res, next) => {
+//     console.log("Faking user as 'user1'");
+//     User.find({ username: "user1" }, (err, users) => {
+//         User.deepPopulate(users[0], "projects.issues colabProjects.issues", () => {
+//             req.user = users[0];
+//             next();
+//         });
+//     });
+// });
 
 // Setup the passport authentication strategy and session serialization
 passport.use(new LocalStrategy(
@@ -105,21 +107,50 @@ router.post('/login', (req, res) => {
                 var resData = {
                     username: user.username
                 }
-
+                isLoggedIn = true;
                 // sendResponse(resData, HTTP.OK, res);
-                res.redirect("/projects.html");
+                // res.redirect("/");
+                res.sendFile(path.join(__dirname, '../views', 'index.html'))
             })
         }
     })(req, res);
 });
 
+router.get('/whichpage', (req, res) => {
+    if (req.signup) {
+        sendResponse("/signup", HTTP.OK, res);
+        req.signup = false;
+    }
+    if (isLoggedIn) {
+        sendResponse("/projects", HTTP.OK, res);
+    }
+    // res.sendFile(path.join(__dirname, 'views', 'index.html'))
+    else if (req.cookies["connect.sid"]) {
+        sendResponse("/login", HTTP.OK, res);
+        // res.sendFile(path.join(__dirname, 'views', 'login.html'))
+    }
+    else {
+        sendResponse("/signup", HTTP.OK, res);
+        // res.sendFile(path.join(__dirname, 'views', 'signup.html'))
+        // res.redirect("/signup.html");
+    }
+});
+
 router.get('/logout', (req, res) => {
     winston.debug("Inside /api/logout");
-
+    isLoggedIn = false;
+    // res.sendFile(path.join(__dirname, '../views', 'login.html'))
+    // req.session.destroy(function (err) {
+    //     res.redirect('/'); //Inside a callback… bulletproof!
+    // });
     req.logout();
 
     sendResponse(null, HTTP.OK, res);
 });
+
+router.get('/signup'), (req, res) => {
+    req.signup = true;
+}
 
 router.post('/signup', (req, res) => {
     winston.debug("Inside /api/signup");
@@ -154,7 +185,7 @@ router.post('/signup', (req, res) => {
                 };
 
                 // sendResponse(resData, HTTP.OK, res); TODO: Make the front end redirect
-                res.redirect("/projects.html");
+                res.redirect("/index.html");
             });
         }
     })
@@ -271,7 +302,7 @@ router.delete('/projects', (req, res) => {
     }
     else {
         // Check if the project is on the user's object
-        var reqProj = findOwnedProject(user, req.query.pname)
+        var reqProj = findOwnedProject(req.user, req.query.pname)
         if (!reqProj) {
             handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
         }
