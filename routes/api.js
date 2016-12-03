@@ -106,7 +106,7 @@ router.post('/login', (req, res) => {
                     username: user.username
                 }
 
-                // Save the logged in cookie
+                // Save the login cookie
                 res.cookie("existingUser", "existingUser", {expires: new Date(4102444800000)}) // Expires Jan 1 2100
 
                 sendResponse(resData, HTTP.OK, res);
@@ -117,11 +117,6 @@ router.post('/login', (req, res) => {
 
 router.get('/logout', (req, res) => {
     winston.debug("Inside /api/logout");
-    isLoggedIn = false;
-    // res.sendFile(path.join(__dirname, '../views', 'login.html'))
-    // req.session.destroy(function (err) {
-    //     res.redirect('/'); //Inside a callback… bulletproof!
-    // });
     req.logout();
 
     sendResponse(null, HTTP.OK, res);
@@ -160,12 +155,15 @@ router.post('/signup', (req, res) => {
                     }
 
                     winston.debug(user.username, "has just logged in.");
+                    
                     var resData = {
                         username: user.username
                     };
 
-                    // sendResponse(resData, HTTP.OK, res); TODO: Make the front end redirect
-                    res.redirect("/index.html");
+                    // Save the login cookie
+                    res.cookie("existingUser", "existingUser", {expires: new Date(4102444800000)}) // Expires Jan 1 2100
+
+                    sendResponse(resData, HTTP.OK, res);
                 });
             }
         })

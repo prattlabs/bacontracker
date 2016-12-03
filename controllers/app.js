@@ -57,9 +57,7 @@ app.service('ProjectService', function ($http, $log, $location) {
 app.controller('RouteController', ['$scope', '$location', '$log', '$http', '$cookies',
     function($scope, $location, $log, $http, $cookies) {
     $(function () {
-        /*
-         Fullscreen background
-         */
+        // Set the background
         $.backstretch("../assets/img/backgrounds/tablebw.jpg");
 
         // Check for cookie and redirect to signup if new user
@@ -72,7 +70,10 @@ app.controller('RouteController', ['$scope', '$location', '$log', '$http', '$coo
             if(true){
                 $http.get("/api/currentUser")
                     .then(function success(response) {
+                            // Set the background
                             $.backstretch("../assets/img/backgrounds/table.jpg");
+                            
+                            // User is logged in, redirect to projects
                             $location.path("/projects");
                             $scope.$apply();
                         }, function error(response) {
@@ -97,9 +98,7 @@ app.controller('RouteController', ['$scope', '$location', '$log', '$http', '$coo
         // Forward with ajax
         $http.post("/api/login", data)
             .then(function success(response) {
-                /*
-                 Fullscreen background
-                 */
+                // Set the background
                 $.backstretch("../assets/img/backgrounds/table.jpg");
                 // Change location to pojects
                 $location.path("/projects");
@@ -134,6 +133,8 @@ app.controller('RouteController', ['$scope', '$location', '$log', '$http', '$coo
             // Forward with ajax
             $http.post("/api/signup", data)
                 .then(function success(response) {
+                    // Set the background
+                    $.backstretch("../assets/img/backgrounds/table.jpg");
                     // Change location to pojects
                     $location.path("/projects");
                 }, function failure(response) {

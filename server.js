@@ -37,11 +37,6 @@ app.use(passport.session());
 // Forward all API calls
 app.use('/api', api);
 
-// // Redirect root to the login page
-// app.get('/', function (req, res) {
-//     res.redirect("/index.html");
-// });
-
 // Serve the html and static content
 app.use('/', express.static(__dirname + '/views'));
 app.use('/controllers', express.static(__dirname + '/controllers'));
