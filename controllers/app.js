@@ -45,7 +45,6 @@ app.service('ProjectService', function ($http, $log, $location) {
     this.logout = function () {
         $http.get("/api/logout")
             .then(function success() {
-                $log.error("Logged out")
                 $location.path("/");
             }, function failure() {
                 $log.error("Failed to log out")
