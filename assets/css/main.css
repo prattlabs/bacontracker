@@ -125,6 +125,10 @@ body {
   float: right;
 }
 
+.navbar {
+  margin-bottom: 15px;
+}
+
 .account-name-nav {
   color: #000;
   float: right;
