@@ -40,6 +40,7 @@ app.use('/api', api);
 // Serve the html and static content
 app.use('/', express.static(__dirname + '/views'));
 app.use('/controllers', express.static(__dirname + '/controllers'));
+app.use('/services', express.static(__dirname + '/services'));
 app.use('/assets', express.static(__dirname + '/assets'));
 app.get('*', function(req, res) {
     res.redirect("/");
