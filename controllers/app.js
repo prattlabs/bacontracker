@@ -67,20 +67,17 @@ app.controller('RouteController', ['$scope', '$location', '$log', '$http', '$coo
         }
         else if($cookies.get("existingUser")) {
             // Check if they are already logged in.
-            if(true){
-                $http.get("/api/currentUser")
-                    .then(function success(response) {
-                            // Set the background
-                            $.backstretch("../assets/img/backgrounds/table.jpg");
-                            
-                            // User is logged in, redirect to projects
-                            $location.path("/projects");
-                            $scope.$apply();
-                        }, function error(response) {
+            $http.get("/api/currentUser")
+                .then(function success(response) {
+                        // Set the background
+                        $.backstretch("../assets/img/backgrounds/table.jpg");
 
-                        }
-                    );
-            }
+                        // User is logged in, redirect to projects
+                        $location.path("/projects");
+                    }, function error(response) {
+
+                    }
+                );
         }
     })
 
