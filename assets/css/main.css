@@ -8,7 +8,6 @@ body {
     background-attachment: fixed;
 }
 
-
 #projectsOwned > div > h3 {
   margin-top: 1em !important;
   margin-bottom: 0.5em;
@@ -117,6 +116,10 @@ body {
 #logo {
   font-family: 'Lobster';
   font-size: 14pt;
+}
+
+.dropdown-menu {
+  left: -50px;
 }
 
 .dropdown {

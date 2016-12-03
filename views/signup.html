@@ -10,8 +10,6 @@
   <title>BaconLogin</title>
   <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="/assets/font-awesome/css/font-awesome.min.css">
-  <link rel="stylesheet" href="/assets/css/form-elements.css">
-  <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
 
@@ -54,7 +52,7 @@
                   <label class="sr-only" for="form-password2">Confirm Password</label>
                   <input type="password" name="form-password2" placeholder="Confirm Password" class="form-password form-control" id="form-password2" required>
                 </div>
-                <button type="submit" class="btn signup">Sign up!</button>
+                <button type="submit" class="btn signup btn-danger">Sign up!</button>
               </form>
             </div>
           </div>
@@ -62,7 +60,7 @@
         <br>
         <div class="row">
           <div class="col-sm-6 col-sm-offset-3">
-            <button class="btn" ng-click="redirect('/login')">Login</button>
+            <button class="btn btn-link" ng-click="redirect('/login')">Login</button>
           </div>
         </div>
         <div class="row">
