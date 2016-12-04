@@ -289,7 +289,8 @@ router.put('/projects', (req, res) => {
                     else if (!user) {
                         handleError(new Error("No user found for username: " + req.body.collaborator), HTTP.BAD_REQUEST, res);
                     }
-                    else if(user.colabProjects.includes(reqProj._id)){                                sendResponse(reqProj, HTTP.OK, res);
+                    else if (user.colabProjects.includes(reqProj._id)) {
+                        sendResponse(reqProj, HTTP.OK, res);
                         sendResponse(reqProj, HTTP.OK, res);
                     }
                     else {
@@ -322,11 +323,8 @@ router.delete('/projects', (req, res) => {
     else {
         // Check if the project is on the user's object
         var reqProj = findOwnedProject(req.user, req.query.pname)
-        if (!reqProj) {
-            handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
-        }
-        else {
-            // Delete the project from all users
+        if (reqProj) {
+            // User owns the project, so delete the project from all users
             User.find({ $or: [{ colabProjects: reqProj }, { projects: reqProj }] }, (err, users) => {
                 if (err) {
                     handleError(new Error("Database read error"), HTTP.INTERNAL_SERVER_ERROR, res);
@@ -348,6 +346,19 @@ router.delete('/projects', (req, res) => {
                 // Send success
                 sendResponse(reqProj, HTTP.OK, res);
             });
+        }
+        else {
+            // It might just be a colab project, so check for that
+            var reqProj = findAssociatedProject(req.user, req.query.pname)
+            if (reqProj) {
+                req.user.colabProjects.splice(req.user.colabProjects.indexOf(reqProj), 1);
+                req.user.save();
+                sendResponse(reqProj, HTTP.OK, res);
+            }
+            else {
+                // User is trying to remove a project they're not associated with.
+                handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
+            }
         }
     }
 });
