@@ -33,7 +33,7 @@
           </div>
           <div class="card-block card-block-button">
             <button class="btn btn-danger" type="button" name="open" ng-click="openPage(project, '/issues')">Open</button>
-            <button class="btn" type="button" name="edit" data-toggle="modal" data-target="#addColab" ng-click="setProject(project);" value="addcolabs">Add Collaborators</button>
+            <button class="btn btn-default" type="button" name="edit" data-toggle="modal" data-target="#addColab" ng-click="setProject(project);" value="addcolabs">Add Collaborators</button>
           </div>
         </div>
       </div>
@@ -73,7 +73,7 @@
               <span>Description: </span><input class="form-control" type="text" ng-model="project.description" required />
             </div>
             <div class="modal-footer">
-              <button id="create" type="submit" class="btn btn-info" ng-click="this.createForm.$valid && createProject()">Create</button>
+              <button id="create" type="submit" class="btn btn-danger modal-btn" ng-click="this.createForm.$valid && createProject()">Create</button>
               <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="refreshProjects()">Cancel</button>
             </div>
           </form>
@@ -93,7 +93,8 @@
               <input id="colabUsername" class="form-control" type="text" placeholder="username" />
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-danger" ng-click="addColab(project)">Add</button>
+              <button type="button" class="btn btn-danger modal-btn" ng-click="addColab(project)">Add</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="refreshProjects()">Cancel</button>
             </div>
           </form>
         </div>
@@ -112,7 +113,8 @@
               <input class="form-control" type="text" ng-model="verification" placeholder="Name of project" />
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-danger delete-btn" ng-click="deleteProject(project)" ng-disabled="verification!=project.name">Delete</button>
+              <button type="button" class="btn btn-danger modal-btn" ng-click="deleteProject(project)" ng-disabled="verification!=project.name">Delete</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="refreshProjects()">Cancel</button>
             </div>
           </form>
         </div>
