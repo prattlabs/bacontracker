@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
+var bcrypt = require('bcryptjs');
 
 // Define the user object
 var userSchema = new mongoose.Schema({
@@ -9,8 +10,15 @@ var userSchema = new mongoose.Schema({
     colabProjects: [{type: mongoose.Schema.Types.ObjectId, ref: "Project"}]
 });
 
-userSchema.methods.authenticate = function(password){
-    return this.password === password; // TODO: may want to change to password hashes in the future
+userSchema.methods.authenticate = function(browser_password, callback){
+    bcrypt.compare(browser_password, this.password, (err, res) => {
+        if(res == true){
+            callback(true);
+        }
+        else{
+            callback(false);
+        }
+    });
 }
 
 userSchema.plugin(deepPopulate);

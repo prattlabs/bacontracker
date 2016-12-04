@@ -8,6 +8,7 @@ var Issue = require('../models/issue.js');
 var Project = require('../models/project.js');
 var User = require('../models/user.js');
 var path = require('path');
+var bcrypt = require('bcryptjs');
 
 // *****************************************************************
 // * Configure passportjs
@@ -35,18 +36,25 @@ passport.use(new LocalStrategy(
             if (err) {
                 done(err, false);
             }
-            else if (!users || users.length !== 1 || !users[0].authenticate(password)) {
+            else if (!users || users.length !== 1) {
                 done(null, false);
             }
             else {
-                // Populate the projects
-                var usr = users[0];
-                User.deepPopulate(usr, "projects.issues colabProjects.issues", () => {
-                    if (err) {
-                        done(err, false);
+                users[0].authenticate(password, (result)=>{
+                    if(result != true){
+                        done(null, false);
                     }
                     else {
-                        done(null, usr);
+                        // Populate the projects
+                        var usr = users[0];
+                        User.deepPopulate(usr, "projects.issues colabProjects.issues", () => {
+                            if (err) {
+                                done(err, false);
+                            }
+                            else {
+                                done(null, usr);
+                            }
+                        });
                     }
                 });
             }
@@ -107,7 +115,7 @@ router.post('/login', (req, res) => {
                 }
 
                 // Save the login cookie
-                res.cookie("existingUser", "existingUser", {expires: new Date(4102444800000)}) // Expires Jan 1 2100
+                res.cookie("existingUser", "existingUser", { expires: new Date(4102444800000) }) // Expires Jan 1 2100
 
                 sendResponse(resData, HTTP.OK, res);
             })
@@ -121,10 +129,6 @@ router.get('/logout', (req, res) => {
 
     sendResponse(null, HTTP.OK, res);
 });
-
-router.get('/signup'), (req, res) => {
-    req.signup = true;
-}
 
 router.post('/signup', (req, res) => {
     winston.debug("Inside /api/signup");
@@ -140,33 +144,42 @@ router.post('/signup', (req, res) => {
             password: req.body["form-password"]
         });
 
-        // Save the new user
-        user.save((err) => {
+        bcrypt.hash(user.password, 8, (err, hash) => {
             if (err) {
-                handleError(err, 500, res);
+                handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
             }
             else {
-                winston.debug("User created", user.username);
+                user.password = hash;
 
-                // Serialize the user to the cookie
-                req.login(user, (err) => {
+                // Save the new user
+                user.save((err) => {
                     if (err) {
-                        handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
+                        handleError(err, 500, res);
                     }
+                    else {
+                        winston.debug("User created", user.username);
 
-                    winston.debug(user.username, "has just logged in.");
-                    
-                    var resData = {
-                        username: user.username
-                    };
+                        // Serialize the user to the cookie
+                        req.login(user, (err) => {
+                            if (err) {
+                                handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
+                            }
 
-                    // Save the login cookie
-                    res.cookie("existingUser", "existingUser", {expires: new Date(4102444800000)}) // Expires Jan 1 2100
+                            winston.debug(user.username, "has just logged in.");
 
-                    sendResponse(resData, HTTP.OK, res);
-                });
+                            var resData = {
+                                username: user.username
+                            };
+
+                            // Save the login cookie
+                            res.cookie("existingUser", "existingUser", { expires: new Date(4102444800000) }) // Expires Jan 1 2100
+
+                            sendResponse(resData, HTTP.OK, res);
+                        });
+                    }
+                })
             }
-        })
+        });
     }
 });
 
@@ -493,7 +506,7 @@ router.put('/issues/updateOrder', (req, res) => {
         if (!reqProj) {
             sendResponse(null, HTTP.NOT_FOUND, res);
         }
-        else if(!req.body.issueOrder){
+        else if (!req.body.issueOrder) {
             winston.debug("No order to update");
             sendResponse(null, HTTP.OK, res);
         }
@@ -532,7 +545,7 @@ router.put('/issues/updateOrder', (req, res) => {
 
             // Add any remaining issues
             reqProj.issues = newOrder.concat(oldOrder);
-            
+
             // Save the project
             reqProj.save((err) => {
                 if (err) {
@@ -558,7 +571,7 @@ router.get('/currentUser', (req, res) => {
             username: req.user.username
         }
 
-         sendResponse(resData, HTTP.OK, res)
+        sendResponse(resData, HTTP.OK, res)
     }
 });
 
