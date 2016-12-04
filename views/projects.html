@@ -15,7 +15,7 @@
   <div id="content">
 
     <div class="col-md-12">
-      <input class="btn btn-danger create-btn" type="button" name="Create" data-toggle="modal" data-target="#createProject"
+      <input class="btn btn-danger create-btn" type="button" name="Create" data-toggle="modal" data-target="#editProject"
              ng-click="initProject();" value="Create">
     </div>
 
@@ -33,7 +33,8 @@
           </div>
           <div class="card-block card-block-button">
             <button class="btn btn-danger" type="button" name="open" ng-click="openPage(project, '/issues')">Open</button>
-            <button class="btn btn-default" type="button" name="edit" data-toggle="modal" data-target="#addColab" ng-click="setProject(project);" value="addcolabs">Add Collaborators</button>
+            <button class="btn btn-default" type="button" name="collaborators" data-toggle="modal" data-target="#addColab" ng-click="setProject(project);" value="addcolabs">Add Collaborators</button>
+            <button class="btn btn-default" type="button" name="edit" data-toggle="modal" data-target="#editProject" ng-click="setProject(project);" value="edit">Edit</button>
           </div>
         </div>
       </div>
@@ -61,19 +62,20 @@
       </div>
     </div>
 
-    <!-- Edit Create Project Modal Window -->
-    <div id="createProject" class="modal fade" role="dialog">
+    <!-- Edit Project Modal Window -->
+    <div id="editProject" class="modal fade" role="dialog">
       <div class="modal-dialog modal-lg">
         <!-- Modal content-->
         <div class="modal-content">
-          <form name="createForm">
+          <form name="editForm">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <span>Name: </span><input class="form-control" type="text" ng-model="project.name" required />
-              <span>Description: </span><input class="form-control" type="text" ng-model="project.description" required />
+              <div id="oldname"></div>
+              <span>Name: </span><input class="form-control" ng-change="saveOldName('{{project.name}}')" type="text" ng-model="project.name" required />
+              <span>Description: </span><input class="form-control" ng-change="saveOldName('{{project.name}}')" type="text" ng-model="project.description" required />
             </div>
             <div class="modal-footer">
-              <button id="create" type="submit" class="btn btn-danger modal-btn" ng-click="this.createForm.$valid && createProject()">Create</button>
+              <button id="edit" type="submit" class="btn btn-danger modal-btn" ng-click="saveProject()">Save and Close</button>
               <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="refreshProjects()">Cancel</button>
             </div>
           </form>

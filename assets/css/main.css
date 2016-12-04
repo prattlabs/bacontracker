@@ -252,3 +252,9 @@ input[type=text]:focus {
 .portlet.ui-sortable-helper {
   border-color: #e53b3b;
 }
+
+#oldname {
+  visibility: hidden;
+  max-width: 0px;
+  max-height: 0px;
+}
