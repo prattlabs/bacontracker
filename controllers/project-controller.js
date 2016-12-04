@@ -74,6 +74,36 @@ angular.module('bacontracker')
             });
         }
 
+        $scope.addColab = function(project) {
+            var colabName = $("#colabUsername").val()
+            if(!colabName){
+                $("#colabUsername").notify(
+                    "Need to provide a username.", {
+                        position: "bottom",
+                        className: "error"
+                    });
+            }
+            else {
+                var url = "/api/projects";
+                url += "?pname=" + $scope.project.name;
+                $http.put(url, {collaborator: colabName})
+                    .then(function success(response) {
+                        $("#colabUsername").notify(
+                            "User has been added to the project.", {
+                            position: "bottom",
+                            className: "success"
+                        });
+                    }, function error(response) {
+                        $("#colabUsername").notify(
+                            "Could not find the user.", {
+                            position: "bottom",
+                            className: "error"
+                        });
+                    }
+                )
+            }
+        }
+
         $scope.init = function() {
             // Get the current user to put in the top of the page
             $http.get("/api/currentUser")

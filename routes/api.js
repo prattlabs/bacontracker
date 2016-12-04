@@ -40,8 +40,8 @@ passport.use(new LocalStrategy(
                 done(null, false);
             }
             else {
-                users[0].authenticate(password, (result)=>{
-                    if(result != true){
+                users[0].authenticate(password, (result) => {
+                    if (result != true) {
                         done(null, false);
                     }
                     else {
@@ -262,23 +262,50 @@ router.put('/projects', (req, res) => {
     }
     else {
         // Check if the project is on the user's object
-        var reqProj = findOwnedProject(user, req.query.pname)
+        var reqProj = findOwnedProject(req.user, req.query.pname)
         if (!reqProj) {
             handleError(new Error("Bad request"), HTTP.BAD_REQUEST, res);
         }
         else {
-
             reqProj.name = req.body.pname ? req.body.pname : reqProj.name;
             reqProj.description = req.body.pdescription ? req.body.pdescription : reqProj.description;
-
-            reqProj.save((err) => {
-                if (err) {
-                    handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
-                }
-                else {
-                    sendResponse(reqProj, HTTP.OK, res);
-                }
-            });
+            if (!req.body.collaborator) {
+                // If no collaborators were added, just save the project an move on.
+                reqProj.save((err) => {
+                    if (err) {
+                        handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
+                    }
+                    else {
+                        sendResponse(reqProj, HTTP.OK, res);
+                    }
+                });
+            }
+            else {
+                // If a collaborator was added, find the collaborator before saving
+                User.findOne({ username: req.body.collaborator }, (err, user) => {
+                    if (err) {
+                        handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
+                    }
+                    else if (!user) {
+                        handleError(new Error("No user found for username: " + req.body.collaborator), HTTP.BAD_REQUEST, res);
+                    }
+                    else if(user.colabProjects.includes(reqProj._id)){                                sendResponse(reqProj, HTTP.OK, res);
+                        sendResponse(reqProj, HTTP.OK, res);
+                    }
+                    else {
+                        user.colabProjects.push(reqProj);
+                        user.save();
+                        reqProj.save((err) => {
+                            if (err) {
+                                handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
+                            }
+                            else {
+                                sendResponse(reqProj, HTTP.OK, res);
+                            }
+                        });
+                    }
+                });
+            }
         }
     }
 });
