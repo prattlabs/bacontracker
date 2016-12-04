@@ -585,14 +585,15 @@ router.put('/issues/updateOrder', (req, res) => {
             reqProj.issues = newOrder.concat(oldOrder);
 
             // Save the project
-            reqProj.save((err) => {
-                if (err) {
-                    handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
-                }
-                else {
+            reqProj.save((err) => {                    
+                // TODO: Will want to put this back in once we fix race condition problem.  See issue #61
+                // if (err) {
+                //     handleError(err, HTTP.INTERNAL_SERVER_ERROR, res);
+                // }
+                // else {
                     // Send success
                     sendResponse(reqProj, HTTP.OK, res);
-                }
+                // }
             });
         }
     }
