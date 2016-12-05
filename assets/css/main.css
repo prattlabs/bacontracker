@@ -30,10 +30,18 @@ body {
   color: white !important;
 }
 
+.header > h3 {
+  white-space: nowrap;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
 .assignee {
   position:absolute;
   bottom:0;
   width: 100%;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
 }
 
 .issue-search {
@@ -205,10 +213,11 @@ input[type=text]:focus {
   margin-bottom: 1.25em;
   padding: 0.3em;
   box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-  min-height: 150px;
+  height: 150px;
   border: 3px;
   text-shadow: none;
   color: #333;
+  white-space: nowrap;
 }
 
 .portlet:hover {
@@ -220,6 +229,8 @@ input[type=text]:focus {
   margin-bottom: 0.5em;
   position: relative;
   background-color: inherit;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
 }
 
 .portlet-header > a {
@@ -240,6 +251,13 @@ input[type=text]:focus {
 
 .portlet-content {
   padding: 0.4em;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
+.portlet-content > p {
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
 }
 
 .portlet-placeholder {
