@@ -1,73 +1,58 @@
-<!DOCTYPE html>
-<html ng-app="bacontracker">
+<div ng-include="'navbar.html'"></div>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Issues</title>
-</head>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+  <h2 id="pname" class="header">{{project.name}}</h2>
+  <!-- Search Box -->
+  <input type="text" class="form-control issue-search" ng-model="filter" placeholder="Filter: issue, author">
+</div>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+  <input class="btn btn-danger create-btn" type="button" name="Create" data-toggle="modal" data-target="#editIssue"
+         ng-click="createIssue();" value="Create">
+</div>
 
-<body class="container" ng-controller="IssueController">
-
-    <div ng-include="'navbar.html'"></div>
-
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-      <h2 id="pname" class="header">{{project.name}}</h2>
-      <!-- Search Box -->
-      <input type="text" class="form-control issue-search" ng-model="filter" placeholder="Filter: issue, author">
+<!-- Issues -->
+<div class="column header col-xs-4 col-sm-4 col-md-4 col-lg-4" id="issueState_{{$index}}" ng-repeat="state in ['Open', 'In Progress', 'Closed']"><h3>{{state}}</h3>
+  <div class="portlet card issue" id="issueOrder_{{issue._id}}" ng-repeat="issue in issues | filter:filter | filter:{state:$index}">
+    <div class="portlet-header card-header draggable">
+      <a href="#" data-toggle="modal" data-target="#editIssue" ng-click="setIssue(issue)"><b>{{issue.title}}</b></a>
     </div>
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-      <input class="btn btn-danger create-btn" type="button" name="Create" data-toggle="modal" data-target="#editIssue"
-             ng-click="createIssue();" value="Create">
+    <div class="portlet-content card-text draggable">
+      <p>{{issue.description}}</p>
+      <p class="assignee blockquote"><a href="#">{{issue.assignee}}</a></p>
     </div>
+  </div>
+</div>
 
-    <!-- Issues -->
-    <div class="column header col-xs-4 col-sm-4 col-md-4 col-lg-4" id="issueState_{{$index}}" ng-repeat="state in ['Open', 'In Progress', 'Closed']"><h3>{{state}}</h3>
-      <div class="portlet card issue" id="issueOrder_{{issue._id}}" ng-repeat="issue in issues | filter:filter | filter:{state:$index}">
-        <div class="portlet-header card-header draggable">
-          <a href="#" data-toggle="modal" data-target="#editIssue" ng-click="setIssue(issue)"><b>{{issue.title}}</b></a>
+<!-- Edit Issue Modal Window -->
+<div id="editIssue" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <form name="editForm">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <span>Title: </span><input class="form-control" type="text" ng-model="issue.title" placeholder="Title" required />
         </div>
-        <div class="portlet-content card-text draggable">
-          <p>{{issue.description}}</p>
-          <p class="assignee blockquote"><a href="#">{{issue.assignee}}</a></p>
+        <div class="modal-body">
+          <span>Description:</span><input class="form-control" type="text" ng-model="issue.description" ng-change="log(issue)" placeholder="Description" required />
+          <span>Assignee:</span><input class="form-control" type="text" ng-model="issue.assignee" ng-change="log(issue)" placeholder="Assignee" />
+          <table>
+          <tr>
+            <td>Number:&nbsp;</td>
+            <td><span class="tag tag-info">{{issue.number}}</span><br></td>
+          </tr>
+          <tr>
+            <td>State:</td>
+            <td><span class="tag" ng-class="selectClass(issue)">{{issue.state}}</span></td>
+          </tr>
+        </table>
         </div>
-      </div>
-    </div>
-
-    <!-- Edit Issue Modal Window -->
-    <div id="editIssue" class="modal fade" role="dialog">
-      <div class="modal-dialog modal-lg">
-        <!-- Modal content-->
-        <div class="modal-content">
-          <form name="editForm">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <span>Title: </span><input class="form-control" type="text" ng-model="issue.title" placeholder="Title" required />
-            </div>
-            <div class="modal-body">
-              <span>Description:</span><input class="form-control" type="text" ng-model="issue.description" ng-change="log(issue)" placeholder="Description" required />
-              <span>Assignee:</span><input class="form-control" type="text" ng-model="issue.assignee" ng-change="log(issue)" placeholder="Assignee" />
-              <table>
-              <tr>
-                <td>Number:&nbsp;</td>
-                <td><span class="tag tag-info">{{issue.number}}</span><br></td>
-              </tr>
-              <tr>
-                <td>State:</td>
-                <td><span class="tag" ng-class="selectClass(issue)">{{issue.state}}</span></td>
-              </tr>
-            </table>
-            </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-info" ng-click="this.editForm.$valid && saveIssue(issue)">Save and Close</button>
-              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="refreshIssues()">Close</button>
-              <button type="button" class="btn btn-danger delete-btn" ng-click="deleteIssue(issue)">Delete</button>
-            </div>
-          </form>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-info" ng-click="this.editForm.$valid && saveIssue(issue)">Save and Close</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="refreshIssues()">Close</button>
+          <button type="button" class="btn btn-danger delete-btn" ng-click="deleteIssue(issue)">Delete</button>
         </div>
-      </div>
+      </form>
     </div>
-</body>
-
-</html>
+  </div>
+</div>
