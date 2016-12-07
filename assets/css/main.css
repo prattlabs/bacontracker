@@ -62,15 +62,17 @@ body {
   outline-color: #5bc0de;
 }
 
-.btn-default {
-  /*color: #c0c0c0 !important;*/
-  /*background-color: white;*/
-  /*border-color: #c0c0c0;*/
+.btn-smaller {
+  font-size: .5rem !important;
+}
+
+.btn-danger {
+  margin-left: 2px;
 }
 
 .btn-default:hover {
   color: black !important;
-  opacity: .5;
+  opacity: .25;
 }
 
 .create-btn {

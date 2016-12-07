@@ -97,30 +97,6 @@ angular.module('bacontracker')
                 }
             }
 
-            // $scope.createProject = function () {
-            //     $http.post(
-            //         "/api/projects",
-            //         {
-            //             "pname" : $scope.project.name,
-            //             "pdescription" : $scope.project.description
-            //         }
-            //     ).then(function success(response) {
-            //             // Hide the edit issue dialog manually
-            //             $('#createProject').modal('hide');
-            //             // $scope.openPage($scope.project, '/issues');
-            //         }, function error(response) {
-                        // $scope.response = "error: " + response;
-                        // $("#create").notify(
-                        //     "The project " + $scope.project.name + " already exists, silly!", {
-                        //         position: "left",
-                        //         className: "error"
-                        //     });
-            //         }
-            //     ).finally(function () {
-            //         $scope.refreshProjects();
-            //     });
-            // }
-
             $scope.deleteProject = function (project) {
                 url = "/api/projects";
                 url += "?pname=" + $scope.project.name;
