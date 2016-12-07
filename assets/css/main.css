@@ -63,6 +63,7 @@ body {
 }
 
 .btn-smaller {
+  margin-top: 2px;
   font-size: .90rem !important;
 }
 
