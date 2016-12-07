@@ -20,9 +20,17 @@
             <p class="card-text">{{project.description}}</p>
           </div>
           <div class="card-block card-block-button">
-            <button class="btn btn-danger" type="button" name="open" ng-click="openPage(project, '/issues')">Open</button>
-            <button class="btn btn-default" type="button" name="collaborators" data-toggle="modal" data-target="#addColab" ng-click="setProject(project);" value="addcolabs">Add Collaborators</button>
-            <button class="btn btn-default" type="button" name="edit" data-toggle="modal" data-target="#editProject" ng-click="setProject(project);" value="edit">Edit</button>
+            <div class="btn-group">
+              <button class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">Option</button>
+              <div class="dropdown-menu" role="menu">
+                <a class="dropdown-item" href="#" name="edit" data-toggle="modal" data-target="#editProject" ng-click="setProject(project);" value="edit">Edit</a>
+                <a class="dropdown-item" href="#" name="collaborators" data-toggle="modal" data-target="#addColab" ng-click="setProject(project);" value="addcolabs">Add Collaborators</a>
+              </div>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-danger card-block-button" type="button" name="open" ng-click="openPage(project, '/issues')">Open</button>
+            </div>
+
           </div>
         </div>
       </div>

@@ -63,14 +63,14 @@ body {
 }
 
 .btn-default {
-  color: #c0c0c0 !important;
-  background-color: white;
-  border-color: #c0c0c0;
+  /*color: #c0c0c0 !important;*/
+  /*background-color: white;*/
+  /*border-color: #c0c0c0;*/
 }
 
 .btn-default:hover {
-  color: white !important;
-  background-color: #c0c0c0;
+  color: black !important;
+  opacity: .5;
 }
 
 .create-btn {
@@ -97,9 +97,8 @@ body {
   outline-color: #e53b3b !important;
 }
 
-.card-block {
-  color: #000;
-  opacity: 0.96;
+.dropdown-menu {
+  padding: 0;
 }
 
 .card-block-info {
@@ -113,7 +112,8 @@ body {
 }
 
 .card.project {
-  min-height: 175px;
+  min-height: 200px;
+  opacity: .96;
 }
 
 .card-title {
@@ -125,7 +125,7 @@ body {
   font-size: 14pt;
 }
 
-.dropdown-menu {
+.nav-dropdown {
   left: -50px !important;
 }
 
